@@ -7,13 +7,12 @@
 		var prel = d3.select("pre#data");
         var results = d3.csv.parse(prel.text());
         create(results);
-    }
+    };
     
     var group = '';
     var size = '';
     var color = '';
 
-    
 
     /** create the chart based on the data */
     function create(data) {      
@@ -40,7 +39,7 @@
           .on("mouseover", function (d) { showPopover.call(this, d); })
           .on("mouseout", function (d) { removePopovers(); })
           .append("text")
-          .attr()
+          .attr();
 
         $('#group').change(function() {
           group = this.value;
@@ -88,7 +87,6 @@
               });
           }
         }
-        
 
         var force = d3.layout.force();
         //force.gravity(0).friction(0.9);
@@ -99,7 +97,7 @@
         function draw(varname) {
           var centers = getCenters(data, varname, [width, height]);
           force.on("tick", tick(centers, varname));
-          labels(centers)
+          labels(centers);
           force.start();
         }
 
@@ -203,7 +201,7 @@ function getDataMapping(data, sizeName, width, height) {
     var radius = 65;
     
     for (var j = 0; j < data.length; j++) {    
-        var d = data[j]
+        var d = data[j];
         d.x = d.x ? d.x : Math.random() * width;
         d.y = d.y ? d.y : Math.random() * height;
         d["Approved Amount"] = +d["Approved Amount"];
@@ -221,7 +219,7 @@ function getDataMapping(data, sizeName, width, height) {
     data.maximums.radius = d3.max(_.pluck(data, "radius"));
     console.log("maxes= " + JSON.stringify(data.maximums));
     return data;
-};
+}
 
 /** get maximum values for continuous variables. This could be a property of the data */
 function getMaximums(data) {
@@ -233,7 +231,7 @@ function getMaximums(data) {
         'Recommended Amount': getMax(data, 'Recommended Amount'),
         'approvedToRecommendedRatio': getMax(data, 'approvedToRecommendedRatio')
     };
-};
+}
 
 function getColors(data) {
     var colors = {};
@@ -251,8 +249,8 @@ function getCenters(data, vname, size) {
         return {name: d, value: 1};
     });
     
-    map = d3.layout.treemap().size(size).ratio(1/1);
+    map = d3.layout.treemap().size(size).ratio(1);
     map.nodes({children: centers});
     
     return centers;
-};
+}
