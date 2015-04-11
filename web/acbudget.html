@@ -22,22 +22,43 @@
   <h1>Alameda County Government Budget</h1>
   <div class="container-fluid">
 
-    <form class="form-inline">
-        <div class="form-group">
-            <label for="year-select">Year:</label>
-          <div id="year-select" class="btn-group selection-year" role="group" data-toggle="buttons">
-            <label class="btn btn-xs btn-default">2014<input id="year2014" type="radio" name="selection-year"/></label>
-            <label class="btn btn-xs btn-default active">2015<input id="year2015" type="radio" name="selection-year"/></label>
-         </div>
-       </div>
-       <div class="form-group">
-         <label for="type-select">Type:</label>
-         <div id="type-select" class="btn-group selection-yype" role="group" data-toggle="buttons">
-            <label class="btn btn-xs btn-default">Revenue<input id="revenue" type="radio" name="selection-type"/></label>
-            <label class="btn btn-xs btn-default active">Expenditure<input id="expenditure" type="radio" name="selection-type"/></label>
-         </div>
-       </div>
-    </form>
+    <fieldset>
+    <div>
+      <label for="year-select">Year:</label>
+      <div id="year-select" class="btn-group selection-year" role="group" data-toggle="buttons">
+          <label class="btn btn-xs btn-default">2014<input id="year2014" type="radio" name="selection-year"/></label>
+          <label class="btn btn-xs btn-default active">2015<input id="year2015" type="radio" name="selection-year"/></label>
+      </div>
+    </div>
+    <div>
+      <label for="year-select">Type:</label>
+      <div id="type-select" class="btn-group selection-type" role="group" data-toggle="buttons">
+          <label class="btn btn-xs btn-default">Revenue<input id="revenue" type="radio" name="selection-type"/></label>
+          <label class="btn btn-xs btn-default active">Expenditure<input id="expenditure" type="radio" name="selection-type"/></label>
+      </div>
+    </div>
+    </fieldset>
+
+    <!--table>
+        <tr>
+          <td><label for="year-select">Year:</label></td>
+          <td>
+            <div id="year-select" class="btn-group selection-year" role="group" data-toggle="buttons">
+              <label class="btn btn-xs btn-default">2014<input id="year2014" type="radio" name="selection-year"/></label>
+              <label class="btn btn-xs btn-default active">2015<input id="year2015" type="radio" name="selection-year"/></label>
+            </div>
+          </td>
+       </tr>
+       <tr>
+         <td><label for="year-select">Type:</label></td>
+         <td>
+           <div id="type-select" class="btn-group selection-yype" role="group" data-toggle="buttons">
+              <label class="btn btn-xs btn-default">Revenue<input id="revenue" type="radio" name="selection-type"/></label>
+              <label class="btn btn-xs btn-default active">Expenditure<input id="expenditure" type="radio" name="selection-type"/></label>
+           </div>
+         </td>
+       </tr>
+    </table-->
 
     <div class="row">
       <div class="col-xs-2">

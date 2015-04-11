@@ -11,8 +11,8 @@
 
 
     /** create the chart based on the data */
-    function create(data) {      
-        var defaultColor = "#a58fff";     
+    function create(data) {
+        var defaultColor = "#a58fff";
         
         var chart = $("#chart");
         var width = Math.max(chart.width(), 100);
@@ -44,14 +44,14 @@
 
         $('#size').change(function() {
           var sizeVal = this.value;
-          data = getDataMapping(data, sizeVal, width, height);  
+          data = getDataMapping(data, sizeVal, width, height);
 
-           d3.selectAll("circle")
+          d3.selectAll("circle")
             .data(doFilter(data))
             .transition()
             .duration(2000)
-            .attr('r', function(d, i) { 
-                return sizeVal ? d.radius : 15 
+            .attr('r', function(d, i) {
+                return sizeVal ? d.radius : 15
             })
             .attr('cx', function(d) { return d.x })
             .attr('cy', function(d) { return d.y });
@@ -66,14 +66,14 @@
         });
 
         function changeColor(val) {
-          console.log(val);
+          //console.log(val);
           d3.selectAll("circle")
             .transition()
             .duration(2000)
-            .style('fill', function(d) { 
-                return val ? colors[val](d[val]) : defaultColor;    
+            .style('fill', function(d) {
+                return val ? colors[val](d[val]) : defaultColor;
             });
-            
+
           $('.colors').empty();
           if (val) {
               var values = colors[val].domain();
@@ -204,13 +204,13 @@ function getDataMapping(data, sizeName, width, height) {
         d["Recommended Amount"] = +d["Recommended Amount"];
         d.approvedToRecommendedRatio = d["Approved Amount"] / d["Recommended Amount"];
         d.type = d["Approved Amount"] > 0 ? "Expenditure" : "Revenue";
-        console.log(j + " app="+ d["Approved Amount"] + " rec="+ d["Recommended Amount"]);
+        //console.log(j + " app="+ d["Approved Amount"] + " rec="+ d["Recommended Amount"]);
         
     }    
     data.maximums = getMaximums(data);
     var rmax = data.maximums[sizeName];
-    for (var j = 0; j < data.length; j++) {    
-        data[j].radius = (sizeName != '') ? radius * (Math.sqrt(data[j][sizeName]) / rmax) : 15;
+    for (var k = 0; k < data.length; k++) {
+        data[k].radius = (sizeName != '') ? radius * (Math.sqrt(data[k][sizeName]) / rmax) : 15;
     }
     data.maximums.radius = d3.max(_.pluck(data, "radius"));
     console.log("maxes= " + JSON.stringify(data.maximums));
