@@ -45,3 +45,7 @@ circle:hover {
 pre {
     display:none;
 }
+
+#year-select, #type-select {
+    margin-left: 5px;
+}

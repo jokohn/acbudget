@@ -1,7 +1,7 @@
-    
     $(document).ready(function() {
         d3.csv("data/budget_data.csv", function (data) {
-            create(data);
+            var model = new budget.Model(data);
+            create(model);
         });
     });
     
@@ -9,9 +9,11 @@
     var size = '';
     var color = '';
 
-
-    /** create the chart based on the data */
-    function create(data) {
+    /**
+     * create the chart based on the data
+     * @param model the budget datamodel.
+     */
+    function create(model) {
         var defaultColor = "#a58fff";
         
         var chart = $("#chart");
@@ -21,10 +23,10 @@
             .attr("width", width)
             .attr("height", height);
 
-        data = getDataMapping(data, size, width, height);
-        var colors = getColors(data);
+        data = model.processData(size, width, height);
+        var colors = model.getColors();
 
-        var posNodes = svg.selectAll("circle").data(doFilter(data));
+        var posNodes = svg.selectAll("circle").data(model.doFilter());
 
         posNodes.enter().append("circle")
           .attr("class", "node")
@@ -44,10 +46,10 @@
 
         $('#size').change(function() {
           var sizeVal = this.value;
-          data = getDataMapping(data, sizeVal, width, height);
+          data = model.processData(sizeVal, width, height);
 
           d3.selectAll("circle")
-            .data(doFilter(data))
+            .data(model.doFilter())
             .transition()
             .duration(2000)
             .attr('r', function(d, i) {
@@ -91,7 +93,7 @@
         draw(group);
 
         function draw(varname) {
-          var centers = getCenters(data, varname, [width, height]);
+          var centers = model.getCenters(varname, [width, height]);
           force.on("tick", tick(centers, varname));
           labels(centers);
           force.start();
@@ -184,69 +186,3 @@
           };
         }
       }
-
-
-function doFilter(rows) {
-    return _.filter(rows, function(d) {
-        return d.type == "Expenditure";
-    });
-}
-
-/** Add more properties do the initial data rows */
-function getDataMapping(data, sizeName, width, height) {
-    var radius = 65;
-    
-    for (var j = 0; j < data.length; j++) {    
-        var d = data[j];
-        d.x = d.x ? d.x : Math.random() * width;
-        d.y = d.y ? d.y : Math.random() * height;
-        d["Approved Amount"] = +d["Approved Amount"];
-        d["Recommended Amount"] = +d["Recommended Amount"];
-        d.approvedToRecommendedRatio = d["Approved Amount"] / d["Recommended Amount"];
-        d.type = d["Approved Amount"] > 0 ? "Expenditure" : "Revenue";
-        //console.log(j + " app="+ d["Approved Amount"] + " rec="+ d["Recommended Amount"]);
-        
-    }    
-    data.maximums = getMaximums(data);
-    var rmax = data.maximums[sizeName];
-    for (var k = 0; k < data.length; k++) {
-        data[k].radius = (sizeName != '') ? radius * (Math.sqrt(data[k][sizeName]) / rmax) : 15;
-    }
-    data.maximums.radius = d3.max(_.pluck(data, "radius"));
-    console.log("maxes= " + JSON.stringify(data.maximums));
-    return data;
-}
-
-/** get maximum values for continuous variables. This could be a property of the data */
-function getMaximums(data) {
-    var getMax = function(data, variable) {
-        return Math.sqrt(d3.max(_.pluck(data, variable)));
-    };    
-    return {
-        'Approved Amount': getMax(data, 'Approved Amount'),
-        'Recommended Amount': getMax(data, 'Recommended Amount'),
-        'approvedToRecommendedRatio': getMax(data, 'approvedToRecommendedRatio')
-    };
-}
-
-function getColors(data) {
-    var colors = {};
-    var categoricColumns = ["Fiscal Year", "Program Area", "Budget Unit", "Major Object", "Expense Category", "Account Name"];
-    _.each(categoricColumns, function(col) {
-        colors[col] = d3.scale.category20().domain(data.map( function (d) { return d[col]; }));
-    });
-    return colors;
-}
-
-/** get the centers of the clusters using a treemap layout */
-function getCenters(data, vname, size) {
-    var centers, map;
-    centers = _.uniq(_.pluck(data, vname)).map(function (d) {
-        return {name: d, value: 1};
-    });
-    
-    map = d3.layout.treemap().size(size).ratio(1);
-    map.nodes({children: centers});
-    
-    return centers;
-}
