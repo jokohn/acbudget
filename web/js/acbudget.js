@@ -1,13 +1,9 @@
     
-	$( document ).ready(function() {
-       start();
-	});
-	
-	var start = function() {
-		var prel = d3.select("pre#data");
-        var results = d3.csv.parse(prel.text());
-        create(results);
-    };
+    $(document).ready(function() {
+        d3.csv("data/budget_data.csv", function (data) {
+            create(data);
+        });
+    });
     
     var group = '';
     var size = '';
