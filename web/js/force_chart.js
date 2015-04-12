@@ -67,7 +67,7 @@ var budget = (function (module) {
                 .append("text")
                 .attr();
 
-            my.setColor(color);
+            my.setColorAttribute(color);
             my.setGroup(group);
             my.render();
         }
@@ -124,7 +124,7 @@ var budget = (function (module) {
                 });
         };
 
-        my.setSize = function(sizeVal) {
+        my.setSizeAttribute = function(sizeVal) {
             data = model.processData(sizeVal, width, height);
 
             d3.selectAll("circle")
@@ -140,7 +140,7 @@ var budget = (function (module) {
             size = sizeVal;
         };
 
-        my.setColor = function(val) {
+        my.setColorAttribute = function(val) {
             color = val;
             //console.log(val);
             d3.selectAll("circle")

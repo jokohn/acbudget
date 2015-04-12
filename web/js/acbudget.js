@@ -20,11 +20,11 @@ function create(model) {
     });
 
     $('#size').change(function() {
-        forceChart.setSize(this.value);
+        forceChart.setSizeAttribute(this.value);
         forceChart.render();
     });
 
     $('#color').change(function() {
-        forceChart.setColor(this.value);
+        forceChart.setColorAttribute(this.value);
     });
 }
