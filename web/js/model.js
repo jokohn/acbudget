@@ -8,6 +8,7 @@ var budget = (function (module) {
             data : originalData,
             width: 100,
             height: 100,
+            filters: {"Fiscal Year":"2015", "type":"Expenditure"},
             DEFAULT_RADIUS : 65
         };
 
@@ -15,26 +16,33 @@ var budget = (function (module) {
         my.processData = function(sizeName) {
             var radius = my.DEFAULT_RADIUS;
             var data = my.data;
+            var filteredData = [];
 
             for (var j = 0; j < data.length; j++) {
                 var d = data[j];
                 d.x = d.x ? d.x : Math.random() * my.width;
                 d.y = d.y ? d.y : Math.random() * my.height;
-                d["Approved Amount"] = +d["Approved Amount"];
-                d["Recommended Amount"] = +d["Recommended Amount"];
+                var approvedAmt = +d["Approved Amount"];
+                d.type = approvedAmt > 0 ? "Expenditure" : "Revenue";
+                d["Approved Amount"] = Math.abs(approvedAmt);
+                d["Recommended Amount"] = Math.abs(+d["Recommended Amount"]);
                 d.approvedToRecommendedRatio = d["Approved Amount"] / d["Recommended Amount"];
-                d.type = d["Approved Amount"] > 0 ? "Expenditure" : "Revenue";
+
                 //console.log(j + " app="+ d["Approved Amount"] + " rec="+ d["Recommended Amount"]);
+                if (d['type'] == my.filters['type'] && d['Fiscal Year'] == my.filters['Fiscal Year']) {
+                    filteredData.push(d);
+                }
             }
 
-            data.maximums = my.getMaximums();
-            var rmax = data.maximums[sizeName];
-            for (var k = 0; k < data.length; k++) {
-                data[k].radius = (sizeName != '') ? radius * (Math.sqrt(data[k][sizeName]) / rmax) : 15;
+            filteredData.maximums = my.getMaximums(filteredData);
+            var rmax = filteredData.maximums[sizeName];
+            for (var k = 0; k < filteredData.length; k++) {
+                filteredData[k].radius = (sizeName != '') ? radius * (Math.sqrt(filteredData[k][sizeName]) / rmax) : 15;
             }
-            data.maximums.radius = d3.max(_.pluck(data, "radius"));
-            console.log("maxes= " + JSON.stringify(data.maximums));
-            return data;
+            filteredData.maximums.radius = d3.max(_.pluck(filteredData, "radius"));
+            console.log("maxes= " + JSON.stringify(filteredData.maximums));
+            my.filteredData = filteredData;
+            return filteredData;
         };
 
         my.setSize = function(width, height) {
@@ -43,8 +51,7 @@ var budget = (function (module) {
         };
 
         /** get maximum values for continuous variables. This could be a property of the data */
-        my.getMaximums = function() {
-            var data = my.data;
+        my.getMaximums = function(data) {
             var getMax = function(data, variable) {
                 return Math.sqrt(d3.max(_.pluck(data, variable)));
             };
@@ -58,7 +65,7 @@ var budget = (function (module) {
         /** get the centers of the clusters using a treemap layout */
         my.getCenters = function(vname) {
             var centers, map;
-            centers = _.uniq(_.pluck(my.data, vname)).map(function (d) {
+            centers = _.uniq(_.pluck(my.filteredData, vname)).map(function (d) {
                 return {name: d, value: 1};
             });
 
@@ -72,15 +79,13 @@ var budget = (function (module) {
             var colors = {};
             var categoricColumns = ["Fiscal Year", "Program Area", "Budget Unit", "Major Object", "Expense Category", "Account Name"];
             _.each(categoricColumns, function(col) {
-                colors[col] = d3.scale.category20().domain(my.data.map( function (d) { return d[col]; }));
+                colors[col] = d3.scale.category20().domain(my.filteredData.map( function (d) { return d[col]; }));
             });
             return colors;
         };
 
-        my.doFilter = function() {
-            return _.filter(my.data, function(d) {
-                return d.type == "Expenditure";
-            });
+        my.setFilter = function(filters) {
+            my.filters = filters;
         };
 
         return my;

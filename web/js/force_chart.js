@@ -19,7 +19,7 @@ var budget = (function (module) {
         var colorAttr = '';
 
         var chart;
-        var data;
+        var filteredData;
         var colors;
         var svg;
         var posNodes;
@@ -38,10 +38,10 @@ var budget = (function (module) {
             my.onResize();
             //chart.resize(my.onResize);
 
-            data = model.processData(sizeAttr);
+            filteredData = model.processData(sizeAttr);
             colors = model.getColors();
 
-            posNodes = svg.selectAll("circle").data(model.doFilter());
+            posNodes = svg.selectAll("circle").data(filteredData);
 
             posNodes.enter().append("circle")
                 .attr("class", "node")
@@ -109,14 +109,12 @@ var budget = (function (module) {
             $(this).popover('show')
         };
 
-
         my.setGroup = function(val) {
             group = val;
             var centers = model.getCenters(group);
             force.on("tick", tick(centers, group));
             labels(centers);
         };
-
 
         var labels = function(centers) {
             svg.selectAll(".label").remove();
@@ -133,10 +131,10 @@ var budget = (function (module) {
         };
 
         my.setSizeAttribute = function(sizeVal) {
-            data = model.processData(sizeVal);
+            filteredData = model.processData(sizeVal);
 
             d3.selectAll("circle")
-                .data(model.doFilter())
+                .data(filteredData)
                 .transition()
                 .duration(2000)
                 .attr('r', function(d, i) {
@@ -178,8 +176,8 @@ var budget = (function (module) {
                 foci[centers[i].name] = centers[i];
             }
             return function (e) {
-                for (var i = 0; i < data.length; i++) {
-                    var o = data[i];
+                for (var i = 0; i < filteredData.length; i++) {
+                    var o = filteredData[i];
                     var f = foci[o[varname]];
                     o.y += ((f.y + (f.dy / 2)) - o.y) * e.alpha;
                     o.x += ((f.x + (f.dx / 2)) - o.x) * e.alpha;
@@ -195,10 +193,10 @@ var budget = (function (module) {
         };
 
         var collide = function(alpha) {
-            var quadtree = d3.geom.quadtree(data);
+            var quadtree = d3.geom.quadtree(filteredData);
             return function (d) {
                 var padding = 5;
-                var r = d.radius + data.maximums["radius"] + padding,
+                var r = d.radius + filteredData.maximums["radius"] + padding,
                     nx1 = d.x - r,
                     nx2 = d.x + r,
                     ny1 = d.y - r,
