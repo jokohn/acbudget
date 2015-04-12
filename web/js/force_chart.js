@@ -20,9 +20,8 @@ var budget = (function (module) {
 
         var chart;
         var filteredData;
-        var colors;
         var svg;
-        var posNodes;
+        var circles;
         var force = d3.layout.force();
         //force.gravity(0).friction(0.9);
 
@@ -38,36 +37,8 @@ var budget = (function (module) {
             my.onResize();
             //chart.resize(my.onResize);
 
-            filteredData = model.processData(sizeAttr);
-            colors = model.getColors();
-
-            posNodes = svg.selectAll("circle").data(filteredData, keyFunc);
-
-            posNodes.enter().append("circle")
-                .attr("class", "node")
-                .attr("cx", function (d) {
-                    return d.x;
-                })
-                .attr("cy", function (d) {
-                    return d.x;
-                })
-                .attr("r", function (d) {
-                    return d.radius;
-                })
-                .style("fill", function (d, i) {
-                    return DEFAULT_COLOR;
-                })
-                .on("mouseover", function (d) {
-                    showPopover.call(this, d);
-                })
-                .on("mouseout", function (d) {
-                    removePopovers();
-                })
-                .append("text")
-                .attr();
-
-            my.setColorAttribute(colorAttr);
-            my.setGroup(group);
+            //my.setColorAttribute(colorAttr);
+            //my.setGroup(group);
         }
 
         my.onResize = function() {
@@ -110,18 +81,49 @@ var budget = (function (module) {
 
             $('.colors').empty();
             if (val) {
-                var values = colors[val].domain();
+                var cmap = model.getColors(val);
+                var values = cmap.domain();
                 _.each(values, function (label) {
                     $('.colors').append('<div class="col-xs-1 color-legend" style="background:'
-                    + colors[val](label) + ';">' + label + '</div>')
+                    + cmap(label) + ';">' + label + '</div>')
                 });
             }
         };
 
         my.render = function() {
             console.log("render anim");
-            var circles = d3.selectAll("circle"); //.data(filteredData, keyFunc);
 
+            filteredData = model.processData(sizeAttr);
+            var cmap = model.getColors(colorAttr);
+
+            circles = svg.selectAll("circle").data(filteredData, model.keyFunc);
+
+            // ENTER
+            circles.enter()
+                .append("circle")
+                .attr("class", "node")
+                .attr("cx", function (d) {
+                    return d.x;
+                })
+                .attr("cy", function (d) {
+                    return d.x;
+                })
+                .attr("r", function (d) {
+                    return d.radius;
+                })
+                .style("fill", function (d, i) {
+                    return DEFAULT_COLOR;
+                })
+                .on("mouseover", function (d) {
+                    showPopover.call(this, d);
+                })
+                .on("mouseout", function (d) {
+                    removePopovers();
+                })
+                .append("text")
+                .attr();
+
+            // UPDATE
             circles
                 .transition()
                 .duration(2000)
@@ -131,15 +133,17 @@ var budget = (function (module) {
                 .attr('cx', function(d) { return d.x })
                 .attr('cy', function(d) { return d.y })
                 .style('fill', function (d) {
-                    return colorAttr ? colors[colorAttr](d[colorAttr]) : DEFAULT_COLOR;
+                    return colorAttr ? cmap(d[colorAttr]) : DEFAULT_COLOR;
                 });
 
-            console.log("render force");
-            force.start();
-        };
+            // EXIT
+            circles.exit()
+                .transition()
+                .duration(1000)
+                .attr('r', 0)
+                .remove();
 
-        var keyFunc = function(d) {
-            return d.id;
+            force.start();
         };
 
         var removePopovers = function() {
@@ -170,11 +174,13 @@ var budget = (function (module) {
             return function (e) {
                 for (var i = 0; i < filteredData.length; i++) {
                     var item = filteredData[i];
+                    //console.log("item["+varname+"]=" + item[varname]);
                     var foci = focis[item[varname]];
+
                     item.y += ((foci.y + (foci.dy / 2)) - item.y) * e.alpha;
                     item.x += ((foci.x + (foci.dx / 2)) - item.x) * e.alpha;
                 }
-                posNodes.each(collide(.11))
+                circles.each(collide(.11))
                     .attr("cx", function (d) {
                         return d.x;
                     })

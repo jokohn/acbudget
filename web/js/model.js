@@ -19,7 +19,8 @@ var budget = (function (module) {
 
             for (var j = 0; j < data.length; j++) {
                 var d = data[j];
-                d.id = j;
+                d.id = d["Program Area"] +","+ d["Budget Unit"] + "," + d["Department"]
+                    + "," + d["Major Object"] + "," + d["Expense Category"] + "," + d["Account Name"];
                 d.x = Math.random() * my.width;
                 d.y = Math.random() * my.height;
                 var approvedAmt =  +d["Approved Amount"];
@@ -28,6 +29,7 @@ var budget = (function (module) {
                 d["Recommended Amount"] = Math.abs(+d["Recommended Amount"]);
                 d.approvedToRecommendedRatio = d["Approved Amount"] / d["Recommended Amount"];
             }
+            my.colors = computeColors(data);
             my.data = data;
         }
 
@@ -43,7 +45,7 @@ var budget = (function (module) {
                 }
             }
 
-            filteredData.maximums = my.getMaximums(filteredData);
+            filteredData.maximums = getMaximums(filteredData);
             var rmax = filteredData.maximums[sizeName];
             for (var k = 0; k < filteredData.length; k++) {
                 filteredData[k].radius = (sizeName != '') ? DEFAULT_RADIUS * (Math.sqrt(filteredData[k][sizeName]) / rmax) : 15;
@@ -67,7 +69,7 @@ var budget = (function (module) {
         };
 
         /** get maximum values for continuous variables. This could be a property of the data */
-        my.getMaximums = function(data) {
+        var getMaximums = function(data) {
             var getMax = function(data, variable) {
                 return Math.sqrt(d3.max(_.pluck(data, variable)));
             };
@@ -81,7 +83,7 @@ var budget = (function (module) {
         /** get the centers of the clusters using a treemap layout */
         my.getCenters = function(vname) {
             var centers, map;
-            centers = _.uniq(_.pluck(my.filteredData, vname)).map(function (d) {
+            centers = _.uniq(_.pluck(my.data, vname)).map(function (d) {
                 return {name: d, value: 1};
             });
 
@@ -91,31 +93,42 @@ var budget = (function (module) {
             return centers;
         };
 
-        my.getColors = function() {
+        var computeColors = function(data) {
             var colors = {};
-            var categoricColumns = ["Fiscal Year", "Program Area", "Budget Unit", "Major Object", "Expense Category", "Account Name"];
+            var categoricColumns = ["Fiscal Year", "Program Area", "Department",
+                "Budget Unit", "Major Object", "Expense Category", "Account Name"
+            ];
             _.each(categoricColumns, function(col) {
-                colors[col] = d3.scale.category20().domain(my.filteredData.map( function (d) { return d[col]; }));
+                colors[col] = d3.scale.category20().domain(data.map( function (d) { return d[col]; }));
             });
             return colors;
+        };
+
+        my.getColors = function(attr) {
+            return my.colors[attr];
         };
 
         my.setFilter = function(filters) {
             my.filters = filters;
         };
 
+
+        my.keyFunc = function(d) {
+            return d.id;
+        };
+
         my.serialize = function(d) {
-            return "Account Name: " + d['Account Name'] + "<br />" +
-                "Program Area: " + d['Program Area'] + "<br />" +
-                "Expense Category: " + d['Expense Category'] + "<br />" +
-                "Major Object: " + d['Major Object'] + "<br />" +
-                "Budget Unit: " + d['Budget Unit'] + "<br />" +
-                "Department: " + d['Department'] + "<br />" +
-                "Program Area: " + d['Program Area'] + "<br />" +
-                "Fiscal Year: " + d['Fiscal Year'] + "<br />" +
-                "Type: <b>" + d.type + "</b><br />" +
-                "Approved Amount: $" + NUMBER_FORMAT(d['Approved Amount']) + "<br />" +
-                "Recommended Amount: $" + NUMBER_FORMAT(d['Recommended Amount']);
+            return " --- <b>" + d.type + "</b> --- <br/>" +
+                "<b>Program Area: </b>" + d['Program Area'] + "<br/>" +
+                "<b>Department: </b>" + d['Department'] + "<br/>" +
+                "<b>Account Name: </b>" + d['Account Name'] + "<br/>" +
+                "<b>Expense Category: </b>" + d['Expense Category'] + "<br/>" +
+                "<b>Major Object: </b>" + d['Major Object'] + "<br/>" +
+                "<b>Department: </b>" + d['Department'] + "<br/>" +
+                "<b>Fiscal Year: </b>" + d['Fiscal Year'] + "<br/>" +
+                "<b>Budget Unit: </b>" + d['Budget Unit'] + "<br/>" +
+                "<b>Approved Amount:</b> $" + NUMBER_FORMAT(d['Approved Amount']) + "<br />" +
+                "<b>Recommended Amount:</b> $" + NUMBER_FORMAT(d['Recommended Amount']);
         };
 
         init(originalData);

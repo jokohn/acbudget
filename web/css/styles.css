@@ -32,8 +32,11 @@ circle:hover {
 .btn-group {
     margin-left: 330px;
 }
-.label {
+.popover {
     font-size: 10px;
+}
+.label {
+    font-size: 11px;
     font-weight: bold;
 }
 .selection-mode {
