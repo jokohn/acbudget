@@ -6,25 +6,27 @@ var budget = (function (module) {
         // holds public methods and data
         var my = {
             data : originalData,
+            width: 100,
+            height: 100,
             DEFAULT_RADIUS : 65
         };
 
         /** add more properties to original data */
-        my.processData = function(sizeName, width, height) {
+        my.processData = function(sizeName) {
             var radius = my.DEFAULT_RADIUS;
             var data = my.data;
 
             for (var j = 0; j < data.length; j++) {
                 var d = data[j];
-                d.x = d.x ? d.x : Math.random() * width;
-                d.y = d.y ? d.y : Math.random() * height;
+                d.x = d.x ? d.x : Math.random() * my.width;
+                d.y = d.y ? d.y : Math.random() * my.height;
                 d["Approved Amount"] = +d["Approved Amount"];
                 d["Recommended Amount"] = +d["Recommended Amount"];
                 d.approvedToRecommendedRatio = d["Approved Amount"] / d["Recommended Amount"];
                 d.type = d["Approved Amount"] > 0 ? "Expenditure" : "Revenue";
                 //console.log(j + " app="+ d["Approved Amount"] + " rec="+ d["Recommended Amount"]);
-
             }
+
             data.maximums = my.getMaximums();
             var rmax = data.maximums[sizeName];
             for (var k = 0; k < data.length; k++) {
@@ -35,6 +37,10 @@ var budget = (function (module) {
             return data;
         };
 
+        my.setSize = function(width, height) {
+            my.width = width;
+            my.height = height;
+        };
 
         /** get maximum values for continuous variables. This could be a property of the data */
         my.getMaximums = function() {
@@ -50,13 +56,13 @@ var budget = (function (module) {
         };
 
         /** get the centers of the clusters using a treemap layout */
-        my.getCenters = function(vname, size) {
+        my.getCenters = function(vname) {
             var centers, map;
             centers = _.uniq(_.pluck(my.data, vname)).map(function (d) {
                 return {name: d, value: 1};
             });
 
-            map = d3.layout.treemap().size(size).ratio(1);
+            map = d3.layout.treemap().size([my.width, my.height]).ratio(1);
             map.nodes({children: centers});
 
             return centers;
@@ -71,13 +77,11 @@ var budget = (function (module) {
             return colors;
         };
 
-
         my.doFilter = function() {
             return _.filter(my.data, function(d) {
                 return d.type == "Expenditure";
             });
         };
-
 
         return my;
     };

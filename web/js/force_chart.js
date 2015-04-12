@@ -21,7 +21,6 @@ var budget = (function (module) {
         var chart;
         var data;
         var colors;
-        var width, height;
         var svg;
         var posNodes;
         var force = d3.layout.force();
@@ -39,7 +38,7 @@ var budget = (function (module) {
             my.onResize();
             //chart.resize(my.onResize);
 
-            data = model.processData(size, width, height);
+            data = model.processData(size);
             colors = model.getColors();
 
             posNodes = svg.selectAll("circle").data(model.doFilter());
@@ -75,7 +74,8 @@ var budget = (function (module) {
         my.onResize = function() {
             width = Math.max(chart.width(), 100);
             height = Math.max(chart.height(), 100);
-            console.log("w="+ width + " h=" + height);
+            model.setSize(width, height);
+            //console.log("w="+ width + " h=" + height);
             svg.attr("width", width)
                 .attr("height", height);
         };
@@ -112,7 +112,7 @@ var budget = (function (module) {
 
         my.setGroup = function(val) {
             group = val;
-            var centers = model.getCenters(group, [width, height]);
+            var centers = model.getCenters(group);
             force.on("tick", tick(centers, group));
             labels(centers);
         };
@@ -133,7 +133,7 @@ var budget = (function (module) {
         };
 
         my.setSizeAttribute = function(sizeVal) {
-            data = model.processData(sizeVal, width, height);
+            data = model.processData(sizeVal);
 
             d3.selectAll("circle")
                 .data(model.doFilter())
