@@ -21,7 +21,7 @@
 
 <body>
 
-  <h1>Alameda County Government Budget</h1>
+  <h1>Alameda County Budget</h1>
   <div class="container-fluid">
 
     <fieldset>
@@ -41,31 +41,10 @@
     </div>
     </fieldset>
 
-    <!--table>
-        <tr>
-          <td><label for="year-select">Year:</label></td>
-          <td>
-            <div id="year-select" class="btn-group selection-year" role="group" data-toggle="buttons">
-              <label class="btn btn-xs btn-default">2014<input id="year2014" type="radio" name="selection-year"/></label>
-              <label class="btn btn-xs btn-default active">2015<input id="year2015" type="radio" name="selection-year"/></label>
-            </div>
-          </td>
-       </tr>
-       <tr>
-         <td><label for="year-select">Type:</label></td>
-         <td>
-           <div id="type-select" class="btn-group selection-yype" role="group" data-toggle="buttons">
-              <label class="btn btn-xs btn-default">Revenue<input id="revenue" type="radio" name="selection-type"/></label>
-              <label class="btn btn-xs btn-default active">Expenditure<input id="expenditure" type="radio" name="selection-type"/></label>
-           </div>
-         </td>
-       </tr>
-    </table-->
-
     <div class="row">
       <div class="col-xs-2">
-        Group By:
-        <select class="form-control" name="group" id="group">
+        <label for="groupSelect">Group By:</label>
+        <select id="groupSelect" class="form-control" name="group">
           <option value=""></option>
           <option value="Fiscal Year">Year</option>
           <option value="Program Area">Program Area</option>
@@ -77,8 +56,8 @@
       </div>
 
       <div class="col-xs-2">
-        Size By:
-        <select class="form-control" name="size" id="size">
+        <label for="sizeSelect">Size By:</label>
+        <select id="sizeSelect" class="form-control" name="size">
           <option value=""></option>
           <option value="Approved Amount">Approved Amount</option>
           <option value="Recommended Amount">Recommended Amount</option>
@@ -87,8 +66,8 @@
       </div>
 
       <div class="col-xs-2">
-        Color By:
-        <select class="form-control" name="color" id="color">
+        <label for="colorSelect">Color By:</label>
+        <select id="colorSelect" class="form-control" name="color">
           <option value=""></option>
             <option value="Fiscal Year">Year</option>
             <option value="Program Area">Program Area</option>

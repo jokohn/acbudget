@@ -14,17 +14,17 @@ function create(model) {
 
     var forceChart = budget.ForceChart("#chart", model);
 
-    $('#group').change(function() {
+    $('#groupSelect').change(function() {
         forceChart.setGroup(this.value);
         forceChart.render();
     });
 
-    $('#size').change(function() {
+    $('#sizeSelect').change(function() {
         forceChart.setSizeAttribute(this.value);
         forceChart.render();
     });
 
-    $('#color').change(function() {
+    $('#colorSelect').change(function() {
         forceChart.setColorAttribute(this.value);
     });
 }

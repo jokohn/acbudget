@@ -18,6 +18,7 @@ var budget = (function (module) {
         var size = '';
         var color = '';
 
+        var chart;
         var data;
         var colors;
         var width, height;
@@ -32,12 +33,11 @@ var budget = (function (module) {
          */
         function init(div) {
 
-            var chart = $(div);
-            width = Math.max(chart.width(), 100);
-            height = Math.max(chart.height(), 100);
-            svg = d3.select(div).append("svg")
-                .attr("width", width)
-                .attr("height", height);
+            chart = $(div);
+            svg = d3.select(div).append("svg");
+
+            my.onResize();
+            //chart.resize(my.onResize);
 
             data = model.processData(size, width, height);
             colors = model.getColors();
@@ -71,6 +71,14 @@ var budget = (function (module) {
             my.setGroup(group);
             my.render();
         }
+
+        my.onResize = function() {
+            width = Math.max(chart.width(), 100);
+            height = Math.max(chart.height(), 100);
+            console.log("w="+ width + " h=" + height);
+            svg.attr("width", width)
+                .attr("height", height);
+        };
 
         var removePopovers = function() {
             $('.popover').each(function () {
