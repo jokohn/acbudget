@@ -24,25 +24,29 @@
   <h1>Alameda County Budget</h1>
   <div class="container-fluid">
 
-    <fieldset>
-    <div>
-      <label for="year-select">Year:</label>
-      <div id="year-select" class="btn-group selection-year" role="group" data-toggle="buttons">
-          <label class="btn btn-xs btn-default">2014<input id="year2014" type="radio" name="selection-year"/></label>
-          <label class="btn btn-xs btn-default active">2015<input id="year2015" type="radio" name="selection-year"/></label>
-      </div>
-    </div>
-    <div>
-      <label for="type-select">Type:</label>
-      <div id="type-select" class="btn-group selection-type" role="group" data-toggle="buttons">
-          <label class="btn btn-xs btn-default">Revenue<input id="revenue" type="radio" name="selection-type"/></label>
-          <label class="btn btn-xs btn-default active">Expenditure<input id="expenditure" type="radio" name="selection-type"/></label>
-      </div>
-    </div>
-    </fieldset>
+  <div class="row">
 
-    <div class="row">
-      <div class="col-xs-2">
+    <div class="control-item">
+        <label for="year-select">Year:</label>
+        <div id="year-select" class="btn-group selection-year" role="group" data-toggle="buttons">
+            <label class="btn btn-xs btn-default">2014<input id="year2014" type="radio" name="selection-year"/></label>
+            <label class="btn btn-xs btn-default active">2015<input id="year2015" type="radio" name="selection-year"/></label>
+        </div>
+    </div>
+
+
+    <div class="control-item">
+        <label for="type-select">Type:</label>
+        <div id="type-select" class="btn-group selection-type" role="group" data-toggle="buttons">
+            <label class="btn btn-xs btn-default">Revenue<input id="revenue" type="radio" name="selection-type"/></label>
+            <label class="btn btn-xs btn-default active">Expenditure<input id="expenditure" type="radio" name="selection-type"/></label>
+        </div>
+    </div>
+
+  </div>
+  <div class="row">
+
+      <div class="control-item">
         <label for="groupSelect">Group By:</label>
         <select id="groupSelect" class="form-control" name="group">
           <option value=""></option>
@@ -55,7 +59,7 @@
         </select>
       </div>
 
-      <div class="col-xs-2">
+      <div class="control-item">
         <label for="sizeSelect">Size By:</label>
         <select id="sizeSelect" class="form-control" name="size">
           <option value=""></option>
@@ -65,7 +69,7 @@
         </select>
       </div>
 
-      <div class="col-xs-2">
+      <div class="control-item">
         <label for="colorSelect">Color By:</label>
         <select id="colorSelect" class="form-control" name="color">
           <option value=""></option>
@@ -77,7 +81,7 @@
             <option value="Account Name">Account Name</option>
         </select>
       </div>
-      <div class="col">
+      <div>
         Colors:
         <div class="row">
           <div class="colors" style="height:34px;">

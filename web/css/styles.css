@@ -20,6 +20,15 @@ circle:hover {
     stroke:#000;
     opacity:1;
 }
+.control-item {
+    margin-left: 10px;
+    margin-right: 10px;
+    float:left;
+}
+.form-control {
+    height: 22px;
+    padding: 0px;
+}
 .btn-group {
     margin-left: 330px;
 }
