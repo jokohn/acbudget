@@ -15,33 +15,48 @@ function create(model) {
     doFilter();
     var forceChart = budget.ForceChart("#chart", model);
 
-    $('#groupSelect').change(function() {
+    var groupSelect = $('#groupSelect');
+    var sizeSelect = $('#sizeSelect');
+    var colorSelect = $('#colorSelect');
+    colorSelect.find('option:contains("Account Name")').prop('selected', true);
+    groupSelect.find('option:contains("Program Area")').prop('selected', true);
+    sizeSelect.find('option:contains("Approved Amount")').prop('selected', true);
+
+    forceChart.setGroup(groupSelect.find(":selected").attr("value"));
+    forceChart.setSizeAttribute(sizeSelect.find(":selected").attr("value"));
+    forceChart.setColorAttribute(colorSelect.find(":selected").attr("value"));
+    forceChart.render();
+
+
+    groupSelect.change(function() {
         forceChart.setGroup(this.value);
         forceChart.render();
     });
 
-    $('#sizeSelect').change(function() {
+    sizeSelect.change(function() {
         forceChart.setSizeAttribute(this.value);
         forceChart.render();
     });
 
-    $('#colorSelect').change(function() {
+    colorSelect.change(function() {
         forceChart.setColorAttribute(this.value);
+        forceChart.render();
     });
 
     $('#year-select').change(function() {
         doFilter();
-        var sizeAttr = $('#sizeSelect').find(":selected").attr("value");
+        var sizeAttr = sizeSelect.find(":selected").attr("value");
         forceChart.setSizeAttribute(sizeAttr);
         forceChart.render();
     });
 
     $('#type-select').change(function() {
         doFilter();
-        var sizeAttr = $('#sizeSelect').find(":selected").attr("value");
+        var sizeAttr = sizeSelect.find(":selected").attr("value");
         forceChart.setSizeAttribute(sizeAttr);
         forceChart.render();
     });
+
 
     function doFilter() {
         var isYear2014 = $("#year2014").is(":checked");
@@ -51,6 +66,5 @@ function create(model) {
         console.log("type  " + type + " year " + year);
 
         model.setFilter({"Fiscal Year":year, "type":type});
-        //forceChart.render();
     }
 }

@@ -17,6 +17,7 @@ var budget = (function (module) {
 
             for (var j = 0; j < data.length; j++) {
                 var d = data[j];
+                d.id = j;
                 d.x = Math.random() * my.width;
                 d.y = Math.random() * my.height;
                 var approvedAmt =  +d["Approved Amount"];

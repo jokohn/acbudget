@@ -41,7 +41,7 @@ var budget = (function (module) {
             filteredData = model.processData(sizeAttr);
             colors = model.getColors();
 
-            posNodes = svg.selectAll("circle").data(filteredData);
+            posNodes = svg.selectAll("circle").data(filteredData, keyFunc);
 
             posNodes.enter().append("circle")
                 .attr("class", "node")
@@ -68,7 +68,6 @@ var budget = (function (module) {
 
             my.setColorAttribute(colorAttr);
             my.setGroup(group);
-            my.render();
         }
 
         my.onResize = function() {
@@ -103,30 +102,11 @@ var budget = (function (module) {
 
         my.setSizeAttribute = function(sizeVal) {
             filteredData = model.processData(sizeVal);
-
-            var circles = d3.selectAll("circle").data(filteredData);
-
-            circles
-                .transition()
-                .duration(2000)
-                .attr('r', function(d, i) {
-                    return sizeVal ? d.radius : 15
-                })
-                .attr('cx', function(d) { return d.x })
-                .attr('cy', function(d) { return d.y });
-
             sizeAttr = sizeVal;
         };
 
         my.setColorAttribute = function(val) {
             colorAttr = val;
-            //console.log(val);
-            d3.selectAll("circle")
-                .transition()
-                .duration(2000)
-                .style('fill', function (d) {
-                    return val ? colors[val](d[val]) : DEFAULT_COLOR;
-                });
 
             $('.colors').empty();
             if (val) {
@@ -139,9 +119,27 @@ var budget = (function (module) {
         };
 
         my.render = function() {
+
+            var circles = d3.selectAll("circle"); //.data(filteredData, keyFunc);
+
+            circles
+                .transition()
+                .duration(2000)
+                .attr('r', function(d, i) {
+                    return sizeAttr ? d.radius : 15
+                })
+                .attr('cx', function(d) { return d.x })
+                .attr('cy', function(d) { return d.y })
+                .style('fill', function (d) {
+                    return colorAttr ? colors[colorAttr](d[colorAttr]) : DEFAULT_COLOR;
+                });
+
             force.start();
         };
 
+        var keyFunc = function(d) {
+            return d.id;
+        };
 
         var removePopovers = function() {
             $('.popover').each(function () {
@@ -165,6 +163,7 @@ var budget = (function (module) {
                         "Department: " + d['Department'] + "<br />" +
                         "Program Area: " + d['Program Area'] + "<br />" +
                         "Fiscal Year: " + d['Fiscal Year'] + "<br />" +
+                        "Type: <b>" + d.type + "</b><br />" +
                         "Approved Amount: $" + format(d['Approved Amount']) + "<br />" +
                         "Recommended Amount: $" + format(d['Recommended Amount']);
                 }
