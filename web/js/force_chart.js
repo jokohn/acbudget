@@ -105,7 +105,7 @@ var budget = (function (module) {
         my.setGroup = function(val) {
             group = val;
             var centers = model.getCenters(group, [width, height]);
-            //force.on("tick", tick(centers, group));
+            force.on("tick", tick(centers, group));
             labels(centers);
         };
 
