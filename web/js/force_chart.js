@@ -15,8 +15,8 @@ var budget = (function (module) {
         };
 
         var group = '';
-        var size = '';
-        var color = '';
+        var sizeAttr = '';
+        var colorAttr = '';
 
         var chart;
         var data;
@@ -38,7 +38,7 @@ var budget = (function (module) {
             my.onResize();
             //chart.resize(my.onResize);
 
-            data = model.processData(size);
+            data = model.processData(sizeAttr);
             colors = model.getColors();
 
             posNodes = svg.selectAll("circle").data(model.doFilter());
@@ -66,7 +66,7 @@ var budget = (function (module) {
                 .append("text")
                 .attr();
 
-            my.setColorAttribute(color);
+            my.setColorAttribute(colorAttr);
             my.setGroup(group);
             my.render();
         }
@@ -145,11 +145,11 @@ var budget = (function (module) {
                 .attr('cx', function(d) { return d.x })
                 .attr('cy', function(d) { return d.y });
 
-            size = sizeVal;
+            sizeAttr = sizeVal;
         };
 
         my.setColorAttribute = function(val) {
-            color = val;
+            colorAttr = val;
             //console.log(val);
             d3.selectAll("circle")
                 .transition()
