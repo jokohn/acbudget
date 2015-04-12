@@ -80,35 +80,6 @@ var budget = (function (module) {
                 .attr("height", height);
         };
 
-        var removePopovers = function() {
-            $('.popover').each(function () {
-                $(this).remove();
-            });
-        };
-
-        var showPopover = function(d) {
-            $(this).popover({
-                placement: 'top auto',
-                container: 'body',
-                trigger: 'manual',
-                html: true,
-                content: function () {
-                    var format = d3.format(",.0f");
-                    return "Account Name: " + d['Account Name'] + "<br />" +
-                        "Program Area: " + d['Program Area'] + "<br />" +
-                        "Expense Category: " + d['Expense Category'] + "<br />" +
-                        "Major Object: " + d['Major Object'] + "<br />" +
-                        "Budget Unit: " + d['Budget Unit'] + "<br />" +
-                        "Department: " + d['Department'] + "<br />" +
-                        "Program Area: " + d['Program Area'] + "<br />" +
-                        "Fiscal Year: " + d['Fiscal Year'] + "<br />" +
-                        "Approved Amount: $" + format(d['Approved Amount']) + "<br />" +
-                        "Recommended Amount: $" + format(d['Recommended Amount']);
-                }
-            });
-            $(this).popover('show')
-        };
-
         my.setGroup = function(val) {
             group = val;
             var centers = model.getCenters(group);
@@ -133,8 +104,9 @@ var budget = (function (module) {
         my.setSizeAttribute = function(sizeVal) {
             filteredData = model.processData(sizeVal);
 
-            d3.selectAll("circle")
-                .data(filteredData)
+            var circles = d3.selectAll("circle").data(filteredData);
+
+            circles
                 .transition()
                 .duration(2000)
                 .attr('r', function(d, i) {
@@ -169,6 +141,37 @@ var budget = (function (module) {
         my.render = function() {
             force.start();
         };
+
+
+        var removePopovers = function() {
+            $('.popover').each(function () {
+                $(this).remove();
+            });
+        };
+
+        var showPopover = function(d) {
+            $(this).popover({
+                placement: 'top auto',
+                container: 'body',
+                trigger: 'manual',
+                html: true,
+                content: function () {
+                    var format = d3.format(",.0f");
+                    return "Account Name: " + d['Account Name'] + "<br />" +
+                        "Program Area: " + d['Program Area'] + "<br />" +
+                        "Expense Category: " + d['Expense Category'] + "<br />" +
+                        "Major Object: " + d['Major Object'] + "<br />" +
+                        "Budget Unit: " + d['Budget Unit'] + "<br />" +
+                        "Department: " + d['Department'] + "<br />" +
+                        "Program Area: " + d['Program Area'] + "<br />" +
+                        "Fiscal Year: " + d['Fiscal Year'] + "<br />" +
+                        "Approved Amount: $" + format(d['Approved Amount']) + "<br />" +
+                        "Recommended Amount: $" + format(d['Recommended Amount']);
+                }
+            });
+            $(this).popover('show')
+        };
+
 
         var tick = function(centers, varname) {
             var foci = {};

@@ -31,13 +31,15 @@ function create(model) {
 
     $('#year-select').change(function() {
         doFilter();
-        forceChart.setSizeAttribute($('#sizeSelect').value);
+        var sizeAttr = $('#sizeSelect').find(":selected").attr("value");
+        forceChart.setSizeAttribute(sizeAttr);
         forceChart.render();
     });
 
     $('#type-select').change(function() {
         doFilter();
-        forceChart.setSizeAttribute($('#sizeSelect').value);
+        var sizeAttr = $('#sizeSelect').find(":selected").attr("value");
+        forceChart.setSizeAttribute(sizeAttr);
         forceChart.render();
     });
 

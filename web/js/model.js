@@ -5,12 +5,28 @@ var budget = (function (module) {
 
         // holds public methods and data
         var my = {
-            data : originalData,
-            width: 100,
-            height: 100,
+            width: 200,
+            height: 200,
             filters: {"Fiscal Year":"2015", "type":"Expenditure"},
             DEFAULT_RADIUS : 65
         };
+
+        /** do first time processing of the data once */
+        function init(originalData) {
+            var data = originalData;
+
+            for (var j = 0; j < data.length; j++) {
+                var d = data[j];
+                d.x = Math.random() * my.width;
+                d.y = Math.random() * my.height;
+                var approvedAmt =  +d["Approved Amount"];
+                d.type = approvedAmt > 0 ? "Expenditure" : "Revenue";
+                d["Approved Amount"] = Math.abs(+d["Approved Amount"]);
+                d["Recommended Amount"] = Math.abs(+d["Recommended Amount"]);
+                d.approvedToRecommendedRatio = d["Approved Amount"] / d["Recommended Amount"];
+            }
+            my.data = data;
+        }
 
         /** add more properties to original data */
         my.processData = function(sizeName) {
@@ -20,15 +36,6 @@ var budget = (function (module) {
 
             for (var j = 0; j < data.length; j++) {
                 var d = data[j];
-                d.x = d.x ? d.x : Math.random() * my.width;
-                d.y = d.y ? d.y : Math.random() * my.height;
-                var approvedAmt = +d["Approved Amount"];
-                d.type = approvedAmt > 0 ? "Expenditure" : "Revenue";
-                d["Approved Amount"] = Math.abs(approvedAmt);
-                d["Recommended Amount"] = Math.abs(+d["Recommended Amount"]);
-                d.approvedToRecommendedRatio = d["Approved Amount"] / d["Recommended Amount"];
-
-                //console.log(j + " app="+ d["Approved Amount"] + " rec="+ d["Recommended Amount"]);
                 if (d['type'] == my.filters['type'] && d['Fiscal Year'] == my.filters['Fiscal Year']) {
                     filteredData.push(d);
                 }
@@ -48,6 +55,13 @@ var budget = (function (module) {
         my.setSize = function(width, height) {
             my.width = width;
             my.height = height;
+            var data = my.data;
+
+            for (var j = 0; j < data.length; j++) {
+                var d = data[j];
+                d.x = Math.random() * my.width;
+                d.y = Math.random() * my.height;
+            }
         };
 
         /** get maximum values for continuous variables. This could be a property of the data */
@@ -87,6 +101,8 @@ var budget = (function (module) {
         my.setFilter = function(filters) {
             my.filters = filters;
         };
+
+        init(originalData);
 
         return my;
     };
