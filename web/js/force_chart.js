@@ -119,7 +119,7 @@ var budget = (function (module) {
         };
 
         my.render = function() {
-
+            console.log("render anim");
             var circles = d3.selectAll("circle"); //.data(filteredData, keyFunc);
 
             circles
@@ -134,6 +134,7 @@ var budget = (function (module) {
                     return colorAttr ? colors[colorAttr](d[colorAttr]) : DEFAULT_COLOR;
                 });
 
+            console.log("render force");
             force.start();
         };
 
@@ -154,18 +155,7 @@ var budget = (function (module) {
                 trigger: 'manual',
                 html: true,
                 content: function () {
-                    var format = d3.format(",.0f");
-                    return "Account Name: " + d['Account Name'] + "<br />" +
-                        "Program Area: " + d['Program Area'] + "<br />" +
-                        "Expense Category: " + d['Expense Category'] + "<br />" +
-                        "Major Object: " + d['Major Object'] + "<br />" +
-                        "Budget Unit: " + d['Budget Unit'] + "<br />" +
-                        "Department: " + d['Department'] + "<br />" +
-                        "Program Area: " + d['Program Area'] + "<br />" +
-                        "Fiscal Year: " + d['Fiscal Year'] + "<br />" +
-                        "Type: <b>" + d.type + "</b><br />" +
-                        "Approved Amount: $" + format(d['Approved Amount']) + "<br />" +
-                        "Recommended Amount: $" + format(d['Recommended Amount']);
+                    return model.serialize(d);
                 }
             });
             $(this).popover('show')
@@ -173,16 +163,16 @@ var budget = (function (module) {
 
 
         var tick = function(centers, varname) {
-            var foci = {};
+            var focis = {};
             for (var i = 0; i < centers.length; i++) {
-                foci[centers[i].name] = centers[i];
+                focis[centers[i].name] = centers[i];
             }
             return function (e) {
                 for (var i = 0; i < filteredData.length; i++) {
-                    var o = filteredData[i];
-                    var f = foci[o[varname]];
-                    o.y += ((f.y + (f.dy / 2)) - o.y) * e.alpha;
-                    o.x += ((f.x + (f.dx / 2)) - o.x) * e.alpha;
+                    var item = filteredData[i];
+                    var foci = focis[item[varname]];
+                    item.y += ((foci.y + (foci.dy / 2)) - item.y) * e.alpha;
+                    item.x += ((foci.x + (foci.dx / 2)) - item.x) * e.alpha;
                 }
                 posNodes.each(collide(.11))
                     .attr("cx", function (d) {

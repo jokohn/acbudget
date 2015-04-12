@@ -3,12 +3,14 @@ var budget = (function (module) {
     /** constructor for budget model */
     module.Model = function (originalData) {
 
+        var DEFAULT_RADIUS = 65;
+        var NUMBER_FORMAT = d3.format(",.0f");
+
         // holds public methods and data
         var my = {
             width: 200,
             height: 200,
-            filters: {"Fiscal Year":"2015", "type":"Expenditure"},
-            DEFAULT_RADIUS : 65
+            filters: {"Fiscal Year":"2015", "type":"Expenditure"}
         };
 
         /** do first time processing of the data once */
@@ -31,7 +33,6 @@ var budget = (function (module) {
 
         /** add more properties to original data */
         my.processData = function(sizeName) {
-            var radius = my.DEFAULT_RADIUS;
             var data = my.data;
             var filteredData = [];
 
@@ -45,7 +46,7 @@ var budget = (function (module) {
             filteredData.maximums = my.getMaximums(filteredData);
             var rmax = filteredData.maximums[sizeName];
             for (var k = 0; k < filteredData.length; k++) {
-                filteredData[k].radius = (sizeName != '') ? radius * (Math.sqrt(filteredData[k][sizeName]) / rmax) : 15;
+                filteredData[k].radius = (sizeName != '') ? DEFAULT_RADIUS * (Math.sqrt(filteredData[k][sizeName]) / rmax) : 15;
             }
             filteredData.maximums.radius = d3.max(_.pluck(filteredData, "radius"));
             console.log("maxes= " + JSON.stringify(filteredData.maximums));
@@ -101,6 +102,20 @@ var budget = (function (module) {
 
         my.setFilter = function(filters) {
             my.filters = filters;
+        };
+
+        my.serialize = function(d) {
+            return "Account Name: " + d['Account Name'] + "<br />" +
+                "Program Area: " + d['Program Area'] + "<br />" +
+                "Expense Category: " + d['Expense Category'] + "<br />" +
+                "Major Object: " + d['Major Object'] + "<br />" +
+                "Budget Unit: " + d['Budget Unit'] + "<br />" +
+                "Department: " + d['Department'] + "<br />" +
+                "Program Area: " + d['Program Area'] + "<br />" +
+                "Fiscal Year: " + d['Fiscal Year'] + "<br />" +
+                "Type: <b>" + d.type + "</b><br />" +
+                "Approved Amount: $" + NUMBER_FORMAT(d['Approved Amount']) + "<br />" +
+                "Recommended Amount: $" + NUMBER_FORMAT(d['Recommended Amount']);
         };
 
         init(originalData);
