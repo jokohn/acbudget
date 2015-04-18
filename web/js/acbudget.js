@@ -9,10 +9,11 @@ $(document).ready(function() {
 /**
  * create the chart based on the data
  * TODO:
- *   - Fix color legend - use small swatches and plain label
+ *   - why does it jump twice when changing group by?
+ *   - show changes from prior year
  *   - only colors for unique values in filtered data
  *   - jitter y of group layout so there is not so much overlap
- *   - why does it jump twice when changing group by?
+ *
  *
  * @param model the budget datamodel.
  */

@@ -35,8 +35,8 @@ circle:hover {
 .popover {
     font-size: 10px;
 }
-.label {
-    font-size: 11px;
+.group-label {
+    font-size: 18px;
     font-weight: bold;
 }
 .selection-mode {

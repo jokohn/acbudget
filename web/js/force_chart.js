@@ -57,17 +57,21 @@ var budget = (function (module) {
         };
 
         var labels = function(centers) {
-            svg.selectAll(".label").remove();
+            svg.selectAll(".group-label").remove();
 
-            svg.selectAll(".label")
-                .data(centers).enter().append("text")
-                .attr("class", "label")
+            svg.selectAll(".group-label")
+                .data(centers).enter()
+                .append("text")
+                .attr("class", "group-label")
                 .text(function (d) {
-                    return d.name
+                    return shortenText(d.name, 20);
                 })
                 .attr("transform", function (d) {
-                    return "translate(" + (d.x + (d.dx / 2)) + ", " + (d.y + 20) + ")";
-                });
+                    return "translate(" + (d.x + (d.dx / 2) - 50) + ", " + (d.y + 20 + Math.random() * 50) + ")";
+                })
+                .style("fill", '#aaa')
+                .append("title")
+                .text(function(d) {return d.name;});
         };
 
         my.setSizeAttribute = function(sizeVal) {
@@ -86,12 +90,14 @@ var budget = (function (module) {
         my.renderColorLegend = function(values, cmap) {
 
             console.log("values  = " + values );
-            var legendEntry = d3.select('.colors').selectAll('.color-legend').data(values, function(d) {return d; });
+            var legendEntry = d3.select('.colors').selectAll('.color-legend')
+                .data(values, function(d) {return d; });
 
             var entryEnter = legendEntry.enter();
             var parentDiv = entryEnter
                 .append('div')
-                .attr('class', "col-xs-1 color-legend");
+                .attr('class', "col-xs-1 color-legend")
+                .attr("title", function(d) {return d; });
             parentDiv
                 .append('span')
                 .attr('class', 'swatch');
@@ -103,7 +109,7 @@ var budget = (function (module) {
             legendEntry.select('.swatch')
                 .style('background', function(d){return cmap(d);});
             legendEntry.select('.labelText')
-                .text(function(d) {return d;});
+                .text(function(d) {return shortenText(d, 15); });
 
             // EXIT
             legendEntry.exit().remove();
@@ -163,6 +169,14 @@ var budget = (function (module) {
                 .remove();
 
             force.start();
+        };
+
+        var shortenText = function(text, maxLen) {
+            var result = text;
+            if (text.length > maxLen) {
+                result = text.substr(0, maxLen - 2) + "…";
+            }
+            return result;
         };
 
         var removePopovers = function() {
