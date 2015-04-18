@@ -47,13 +47,16 @@ circle:hover {
     height: 50px; 
     display: flex;
     align-items: center;
-    height:34px; 
+    height:26px;
     font-size:10px;
-    font-weight:normal; 
-    text-align:center; color:white;
-    text-shadow: -1px 1px #000;
+    font-weight:normal;
 }
 
+.swatch {
+    width: 16px;
+    height: 16px;
+    margin: 3px;
+}
 pre {
     display:none;
 }

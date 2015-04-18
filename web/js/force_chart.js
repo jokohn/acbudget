@@ -36,7 +36,6 @@ var budget = (function (module) {
 
             my.onResize();
             //chart.resize(my.onResize);
-
             //my.setColorAttribute(colorAttr);
             //my.setGroup(group);
         }
@@ -78,20 +77,40 @@ var budget = (function (module) {
 
         my.setColorAttribute = function(val) {
             colorAttr = val;
+            var cmap =  val ? model.getColors(val) : null;
+            var values = val ? model.getColors(val).domain() : [];
 
-            $('.colors').empty();
-            if (val) {
-                var cmap = model.getColors(val);
-                var values = cmap.domain();
-                _.each(values, function (label) {
-                    $('.colors').append('<div class="col-xs-1 color-legend" style="background:'
-                    + cmap(label) + ';">' + label + '</div>')
-                });
-            }
+            my.renderColorLegend(values, cmap);
+        };
+
+        my.renderColorLegend = function(values, cmap) {
+
+            console.log("values  = " + values );
+            var legendEntry = d3.select('.colors').selectAll('.color-legend').data(values, function(d) {return d; });
+
+            var entryEnter = legendEntry.enter();
+            var parentDiv = entryEnter
+                .append('div')
+                .attr('class', "col-xs-1 color-legend");
+            parentDiv
+                .append('span')
+                .attr('class', 'swatch');
+            parentDiv
+                .append('span')
+                .attr('class', 'labelText');
+
+            // ENTER + UPDATE
+            legendEntry.select('.swatch')
+                .style('background', function(d){return cmap(d);});
+            legendEntry.select('.labelText')
+                .text(function(d) {return d;});
+
+            // EXIT
+            legendEntry.exit().remove();
         };
 
         my.render = function() {
-            console.log("render anim");
+            //console.log("render anim");
 
             filteredData = model.processData(sizeAttr);
             var cmap = model.getColors(colorAttr);
