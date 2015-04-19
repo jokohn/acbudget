@@ -27,7 +27,7 @@ circle:hover {
 }
 .form-control {
     height: 22px;
-    padding: 0px;
+    padding: 0;
 }
 .btn-group {
     margin-left: 330px;
@@ -38,11 +38,15 @@ circle:hover {
 .group-label {
     font-size: 14px;
     font-weight: bold;
+    fill: #ddd;
+    text-align: center;
+    text-shadow: -1px 1px #000;
 }
 .selection-mode {
     align:'left';
 }
 .selected-tip-dimension {
+    font-size: 12px;
     color: #5544cc;
 }
 .color-legend {

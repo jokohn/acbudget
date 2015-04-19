@@ -14,7 +14,7 @@ var budget = (function (module) {
         var chart;
         var svg;
         var circles;
-        var force = d3.layout.force();
+        var force; //= d3.layout.force();
         //force.gravity(0).friction(0.9);
 
         /**
@@ -38,6 +38,9 @@ var budget = (function (module) {
         };
 
         my.setGroup = function(group) {
+            //if (group != model.group) {
+            //    model.randomizePositions();
+            //}
             model.group = group;
         };
 
@@ -54,7 +57,7 @@ var budget = (function (module) {
                 .attr("transform", function (d) {
                     return "translate(" + (d.x + (d.dx / 2) - 80) + ", " + (d.y + 20 + Math.random() * 30) + ")";
                 })
-                .style("fill", '#999')
+                //.style("fill", '#999')
                 .append("title")
                 .text(function(d) {return d.name;});
         };
@@ -99,7 +102,11 @@ var budget = (function (module) {
             model.processData();
 
             var centers = model.getCenters();
-            force = d3.layout.force();
+            // .friction(0) freezes
+            // .theta(0.8)
+            // .alpha(0.1)  cooling parameter
+            force = d3.layout.force(); //.gravity(1.0).friction(0.9).alpha(0);
+
             force.on("tick", tick(centers, model.group));
             labels(centers);
 

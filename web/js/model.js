@@ -71,12 +71,13 @@ var budget = (function (module) {
             my.width = width;
             my.height = height;
             var data = my.data;
-            /*
-            for (var j = 0; j < data.length; j++) {
-                var d = data[j];
-                d.x = d.initialX;
-                d.y = d.initialY;
-            }*/
+        };
+
+        my.randomizePositions = function() {
+            _.each(my.data, function(row) {
+                row.x = Math.random() * my.width;
+                row.y = Math.random() *  my.height;
+            });
         };
 
         my.getColorValues = function() {

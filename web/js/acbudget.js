@@ -30,8 +30,8 @@ function create(model) {
     forceChart.setGroup(groupSelect.find(":selected").attr("value"));
     forceChart.setSizeAttribute(sizeSelect.find(":selected").attr("value"));
     forceChart.setColorAttribute(colorSelect.find(":selected").attr("value"));
-    // intitial sizing
-    doResize();
+
+    doResize(); // initial sizing
     forceChart.render();
 
 
