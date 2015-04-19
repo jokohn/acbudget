@@ -84,6 +84,10 @@ var budget = (function (module) {
                 return my.colorAttr ? my.getColors()(row[my.colorAttr]) : DEFAULT_COLOR;
         };
 
+        my.getColorForValue = function(val) {
+            return my.colorAttr ? my.getColors()(val) : DEFAULT_COLOR;
+        };
+
         /** get maximum values for continuous variables. This could be a property of the data */
         var getMaximums = function(data) {
             var getMax = function(data, variable) {

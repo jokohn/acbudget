@@ -9,11 +9,9 @@ var budget = (function (module) {
 
         // holds public methods and data
         var my = {
-            model: model
         };
 
         var chart;
-        var filteredData;
         var svg;
         var circles;
         var force = d3.layout.force();
@@ -66,7 +64,6 @@ var budget = (function (module) {
 
         my.setSizeAttribute = function(sizeVal) {
             model.sizeAttr = sizeVal;
-            filteredData = model.processData();
         };
 
         my.setColorAttribute = function(colorVal) {
@@ -93,7 +90,7 @@ var budget = (function (module) {
 
             // ENTER + UPDATE
             legendEntry.select('.swatch')
-                .style('background', my.getColor);
+                .style('background', model.getColorForValue);
             legendEntry.select('.labelText')
                 .text(function(d) {return shortenText(d, 15); });
 
@@ -102,11 +99,8 @@ var budget = (function (module) {
         };
 
         my.render = function() {
-            //console.log("render anim");
-            filteredData = model.processData();
-            var cmap = model.getColors();
-
-            circles = svg.selectAll("circle").data(filteredData, model.keyFunc);
+            model.processData();
+            circles = svg.selectAll("circle").data(model.filteredData, model.keyFunc);
 
             // ENTER
             circles.enter()
@@ -187,8 +181,8 @@ var budget = (function (module) {
                 focis[centers[i].name] = centers[i];
             }
             return function (e) {
-                for (var i = 0; i < filteredData.length; i++) {
-                    var item = filteredData[i];
+                for (var i = 0; i < model.filteredData.length; i++) {
+                    var item = model.filteredData[i];
                     //console.log("item["+varname+"]=" + item[varname]);
                     var foci = focis[item[group]];
 
@@ -211,10 +205,10 @@ var budget = (function (module) {
          * @returns {Function}
          */
         var collide = function(alpha) {
-            var quadtree = d3.geom.quadtree(filteredData);
+            var quadtree = d3.geom.quadtree(model.filteredData);
             return function (d) {
                 var padding = 5;
-                var r = d.radius + filteredData.maximums["radius"] + padding,
+                var r = d.radius + model.filteredData.maximums["radius"] + padding,
                     nx1 = d.x - r,
                     nx2 = d.x + r,
                     ny1 = d.y - r,
