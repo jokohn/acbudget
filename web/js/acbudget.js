@@ -9,9 +9,9 @@ $(document).ready(function() {
 /**
  * create the chart based on the data
  * TODO:
- *   - show changes from prior year
+ *   - show changes from prior year in scatterplot
  *   - only colors for unique values in filtered data
- *   - update on resize
+ *   - if the bubble siuze is big, add a label
  *
  * @param model the budget datamodel.
  */

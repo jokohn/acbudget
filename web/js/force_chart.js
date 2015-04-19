@@ -14,8 +14,7 @@ var budget = (function (module) {
         var chart;
         var svg;
         var circles;
-        var force; //= d3.layout.force();
-        //force.gravity(0).friction(0.9);
+        var force;
 
         /**
          * initialize the chart
@@ -24,7 +23,6 @@ var budget = (function (module) {
         function init(div) {
             chart = $(div);
             svg = d3.select(div).append("svg");
-            //my.onResize();
         }
 
         my.setSize = function(w, h) {
@@ -197,15 +195,24 @@ var budget = (function (module) {
                     item.y += ((foci.y + (foci.dy / 2)) - item.y) * e.alpha;
                     item.x += ((foci.x + (foci.dx / 2)) - item.x) * e.alpha;
                 }
-                circles.each(collide(.11))
-                    .attr("cx", function (d) {
-                        return d.x;
-                    })
-                    .attr("cy", function (d) {
-                        return d.y;
-                    });
+                circles
+                    .each(my.buoyancy(e.alpha))
+                    .each(collide(.21))// was .11 originally
+                    .attr("cx", function (d) { return d.x; })
+                    .attr("cy", function (d) { return d.y; });
             }
         };
+
+        my.buoyancy = function(alpha) {
+            var defaultGravity = 0.8;
+            var defaultRadius = 65;
+
+            return function(d){
+                var targetY = (svg.attr('height') / 2) -  defaultRadius;
+                d.y += (targetY - d.y) * defaultGravity * alpha * alpha * alpha * 100;
+            };
+        };
+
 
         /**
          * Defines what happens when spheres collide

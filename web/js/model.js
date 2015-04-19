@@ -26,15 +26,35 @@ var budget = (function (module) {
 
             for (var j = 0; j < data.length; j++) {
                 var d = data[j];
-                d.id = d["Program Area"] +","+ d["Budget Unit"] + "," + d["Department"]
-                    + "," + d["Major Object"] + "," + d["Expense Category"] + "," + d["Account Name"];
+                d.id = d["Program Area"] + "," + d["Budget Unit"] + "," + d["Department"]
+                + "," + d["Major Object"] + "," + d["Expense Category"] + "," + d["Account Name"];
                 d.x = Math.random() * my.width;
                 d.y = Math.random() * my.height;
-                var approvedAmt =  +d["Approved Amount"];
+                var approvedAmt = +d["Approved Amount"];
                 d.type = approvedAmt > 0 ? "Expenditure" : "Revenue";
                 d["Approved Amount"] = Math.abs(+d["Approved Amount"]);
                 d["Recommended Amount"] = Math.abs(+d["Recommended Amount"]);
                 d.approvedToRecommendedRatio = d["Approved Amount"] / d["Recommended Amount"];
+            }
+            for (j = 0; j < data.length; j++) {
+                d = data[j];
+                var year = +d['Fiscal Year'];
+                if (year > 2013) {
+                    var priorYear = '' + (year - 1);
+                    var filter = {id: d.id, 'Fiscal Year': priorYear};
+
+                    var priorYearRow = _.findWhere(data, filter);
+
+                    var priorYearRecommended = 1;
+                    var priorYearApproved = 1;
+                    if (priorYearRow) {
+                        var priorYearRecommended = priorYearRow["Recommended Amount"];
+                        var priorYearApproved = priorYearRow["Approved Amount"];
+                    }
+                    d.approvedPercentChange = Math.min(1000, 100 * (d["Approved Amount"] - priorYearApproved) / priorYearApproved);
+                    d.recommendedPercentChange = Math.min(1000, 100* (d["Recommended Amount"] - priorYearRecommended) / priorYearRecommended);
+                    //console.log("d.approvedPercentChange="+ d.approvedPercentChange + " d.recommendedPercentChange="+ d.recommendedPercentChange);
+                }
             }
             my.colors = computeColors(data);
             my.data = data;
@@ -100,7 +120,9 @@ var budget = (function (module) {
             return {
                 'Approved Amount': getMax(data, 'Approved Amount'),
                 'Recommended Amount': getMax(data, 'Recommended Amount'),
-                'approvedToRecommendedRatio': getMax(data, 'approvedToRecommendedRatio')
+                'approvedToRecommendedRatio': getMax(data, 'approvedToRecommendedRatio'),
+                'approvedPercentChange': getMax(data, 'approvedPercentChange'),
+                'recommendedPercentChange': getMax(data, 'recommendedPercentChange')
             };
         };
 
@@ -154,8 +176,10 @@ var budget = (function (module) {
                 }
             });
             tip +=
-                "<b>Approved Amount:</b> $" + NUMBER_FORMAT(d['Approved Amount']) + "<br />" +
-                "<b>Recommended Amount:</b> $" + NUMBER_FORMAT(d['Recommended Amount']);
+                "<b>Approved Amount:</b> $" + NUMBER_FORMAT(d['Approved Amount'])
+                + "   (" + NUMBER_FORMAT(d['approvedPercentChange']) + "% changed)<br />" +
+                "<b>Recommended Amount:</b> $" + NUMBER_FORMAT(d['Recommended Amount'])
+                + "   (" + NUMBER_FORMAT(d['recommendedPercentChange']) + "% changed)";
             return tip;
         };
 
