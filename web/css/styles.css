@@ -36,18 +36,19 @@ circle:hover {
     font-size: 10px;
 }
 .group-label {
-    font-size: 18px;
+    font-size: 14px;
     font-weight: bold;
 }
 .selection-mode {
     align:'left';
 }
+.selected-tip-dimension {
+    color: #5544cc;
+}
 .color-legend {
-    min-height: 100%; 
-    height: 50px; 
     display: flex;
     align-items: center;
-    height:26px;
+    height:22px;
     font-size:10px;
     font-weight:normal;
 }

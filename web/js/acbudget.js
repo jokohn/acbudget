@@ -9,11 +9,9 @@ $(document).ready(function() {
 /**
  * create the chart based on the data
  * TODO:
- *   - why does it jump twice when changing group by?
  *   - show changes from prior year
  *   - only colors for unique values in filtered data
- *   - jitter y of group layout so there is not so much overlap
- *
+ *   - update on resize
  *
  * @param model the budget datamodel.
  */
@@ -32,6 +30,8 @@ function create(model) {
     forceChart.setGroup(groupSelect.find(":selected").attr("value"));
     forceChart.setSizeAttribute(sizeSelect.find(":selected").attr("value"));
     forceChart.setColorAttribute(colorSelect.find(":selected").attr("value"));
+    // intitial sizing
+    doResize();
     forceChart.render();
 
 
@@ -64,6 +64,15 @@ function create(model) {
         forceChart.render();
     });
 
+    $(window).resize(doResize);
+
+    function doResize(e) {
+        var height = Math.max($(window).innerHeight() - $("#chart-header").innerHeight() - 90, 500);
+        var width = Math.max($(window).innerWidth() - 20, 500);
+        console.log("w="+ width + " h=" + height + " e=" + e);
+
+        forceChart.setSize(width, height);
+    }
 
     function doFilter() {
         var isYear2014 = $("#year2014").is(":checked");

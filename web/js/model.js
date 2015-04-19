@@ -6,6 +6,9 @@ var budget = (function (module) {
         var DEFAULT_RADIUS = 65;
         var NUMBER_FORMAT = d3.format(",.0f");
         var DEFAULT_COLOR = "#a58fff";
+        // the tooltip dimensions to show in order
+        var TIP_DIMENSIONS = ['Program Area', 'Department', 'Account Name', 'Expense Category', 'Major Object', 'Budget Unit'];
+
 
         // holds public methods and data
         var my = {
@@ -59,7 +62,7 @@ var budget = (function (module) {
                 filteredData.maximums.radius = d3.max(_.pluck(filteredData, "radius"));
             }
 
-            console.log("maxes= " + JSON.stringify(filteredData.maximums));
+            //console.log("numPoints = " + filteredData.length +"  maxs= " + JSON.stringify(filteredData.maximums));
             my.filteredData = filteredData;
             return filteredData;
         };
@@ -68,12 +71,12 @@ var budget = (function (module) {
             my.width = width;
             my.height = height;
             var data = my.data;
-
+            /*
             for (var j = 0; j < data.length; j++) {
                 var d = data[j];
-                d.x = Math.random() * my.width;
-                d.y = Math.random() * my.height;
-            }
+                d.x = d.initialX;
+                d.y = d.initialY;
+            }*/
         };
 
         my.getColorValues = function() {
@@ -103,7 +106,7 @@ var budget = (function (module) {
         /** get the centers of the clusters using a treemap layout */
         my.getCenters = function() {
             var centers, map;
-            centers = _.uniq(_.pluck(my.filteredData, my.group)).map(function (d) {
+            centers = _.uniq(_.pluck(my.data, my.group)).map(function (d) {
                 return {name: d, value: 1};
             });
 
@@ -138,17 +141,21 @@ var budget = (function (module) {
         };
 
         my.serialize = function(d) {
-            return " --- <b>" + d.type + "</b> --- <br/>" +
-                "<b>Program Area: </b>" + d['Program Area'] + "<br/>" +
-                "<b>Department: </b>" + d['Department'] + "<br/>" +
-                "<b>Account Name: </b>" + d['Account Name'] + "<br/>" +
-                "<b>Expense Category: </b>" + d['Expense Category'] + "<br/>" +
-                "<b>Major Object: </b>" + d['Major Object'] + "<br/>" +
-                "<b>Department: </b>" + d['Department'] + "<br/>" +
-                "<b>Fiscal Year: </b>" + d['Fiscal Year'] + "<br/>" +
-                "<b>Budget Unit: </b>" + d['Budget Unit'] + "<br/>" +
+            var tip = " --- <b>" + d.type + " for " +  d['Fiscal Year'] +"</b> --- <br/>";
+            _.each(TIP_DIMENSIONS, function(dimension) {
+                if (dimension == my.group) {
+                    tip += "<span class='selected-tip-dimension'><b>" + dimension + ": </b>" + d[dimension] + "</span><br/>";
+                } else if (dimension == my.colorAttr) {
+                    tip += "<span class='selected-tip-dimension'><b>" + dimension + ": </b>" + d[dimension] + "</span><br/>";
+                }
+                else {
+                    tip += "<b>" + dimension + ": </b>" + d['Department'] + "<br/>";
+                }
+            });
+            tip +=
                 "<b>Approved Amount:</b> $" + NUMBER_FORMAT(d['Approved Amount']) + "<br />" +
                 "<b>Recommended Amount:</b> $" + NUMBER_FORMAT(d['Recommended Amount']);
+            return tip;
         };
 
         init(originalData);

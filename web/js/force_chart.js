@@ -22,26 +22,23 @@ var budget = (function (module) {
          * @param div unique jquery selector for the chart
          */
         function init(div) {
-
             chart = $(div);
             svg = d3.select(div).append("svg");
-            my.onResize();
+            //my.onResize();
         }
 
-        my.onResize = function() {
-            width = Math.max(chart.width(), 100);
-            height = Math.max(chart.height(), 100);
+        my.setSize = function(w, h) {
+            width = w; //Math.max(chart.width(), 100);
+            height = h; //Math.max(chart.height(), 100);
             model.setSize(width, height);
             //console.log("w="+ width + " h=" + height);
             svg.attr("width", width)
                 .attr("height", height);
+            my.render();
         };
 
         my.setGroup = function(group) {
             model.group = group;
-            var centers = model.getCenters();
-            force.on("tick", tick(centers, group));
-            labels(centers);
         };
 
         var labels = function(centers) {
@@ -55,9 +52,9 @@ var budget = (function (module) {
                     return shortenText(d.name, 20);
                 })
                 .attr("transform", function (d) {
-                    return "translate(" + (d.x + (d.dx / 2) - 50) + ", " + (d.y + 20 + Math.random() * 50) + ")";
+                    return "translate(" + (d.x + (d.dx / 2) - 80) + ", " + (d.y + 20 + Math.random() * 30) + ")";
                 })
-                .style("fill", '#aaa')
+                .style("fill", '#999')
                 .append("title")
                 .text(function(d) {return d.name;});
         };
@@ -79,7 +76,7 @@ var budget = (function (module) {
             var entryEnter = legendEntry.enter();
             var parentDiv = entryEnter
                 .append('div')
-                .attr('class', "col-xs-1 color-legend")
+                .attr('class', "col-xs-2 color-legend")
                 .attr("title", function(d) {return d; });
             parentDiv
                 .append('span')
@@ -92,7 +89,7 @@ var budget = (function (module) {
             legendEntry.select('.swatch')
                 .style('background', model.getColorForValue);
             legendEntry.select('.labelText')
-                .text(function(d) {return shortenText(d, 15); });
+                .text(function(d) {return shortenText(d, 25); });
 
             // EXIT
             legendEntry.exit().remove();
@@ -100,6 +97,12 @@ var budget = (function (module) {
 
         my.render = function() {
             model.processData();
+
+            var centers = model.getCenters();
+            force = d3.layout.force();
+            force.on("tick", tick(centers, model.group));
+            labels(centers);
+
             circles = svg.selectAll("circle").data(model.filteredData, model.keyFunc);
 
             // ENTER
@@ -110,7 +113,7 @@ var budget = (function (module) {
                     return d.x;
                 })
                 .attr("cy", function (d) {
-                    return d.x;
+                    return d.y;
                 })
                 .attr("r", function (d) {
                     return d.radius;
@@ -183,9 +186,7 @@ var budget = (function (module) {
             return function (e) {
                 for (var i = 0; i < model.filteredData.length; i++) {
                     var item = model.filteredData[i];
-                    //console.log("item["+varname+"]=" + item[varname]);
                     var foci = focis[item[group]];
-
                     item.y += ((foci.y + (foci.dy / 2)) - item.y) * e.alpha;
                     item.x += ((foci.x + (foci.dx / 2)) - item.x) * e.alpha;
                 }
