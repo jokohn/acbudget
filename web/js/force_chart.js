@@ -29,7 +29,6 @@ var budget = (function (module) {
             width = w; //Math.max(chart.width(), 100);
             height = h; //Math.max(chart.height(), 100);
             model.setSize(width, height);
-            //console.log("w="+ width + " h=" + height);
             svg.attr("width", width)
                 .attr("height", height);
             my.render();
@@ -44,16 +43,17 @@ var budget = (function (module) {
 
         var labels = function(centers) {
             svg.selectAll(".group-label").remove();
+            var maxLen = centers.length > 10 ? 15 : 25;
 
-            svg.selectAll(".group-label")
-                .data(centers).enter()
+            var labels = svg.selectAll(".group-label").data(centers);
+            labels.enter()
                 .append("text")
                 .attr("class", "group-label")
                 .text(function (d) {
-                    return shortenText(d.name, 20);
+                    return shortenText(d.name, maxLen);
                 })
                 .attr("transform", function (d) {
-                    return "translate(" + (d.x + (d.dx / 2) - 80) + ", " + (d.y + 20 + Math.random() * 30) + ")";
+                    return "translate(" + (d.x + (d.dx / 2) - 80) + ", " + (d.y + 30) + ")";
                 })
                 //.style("fill", '#999')
                 .append("title")
@@ -103,7 +103,7 @@ var budget = (function (module) {
             // .friction(0) freezes
             // .theta(0.8)
             // .alpha(0.1)  cooling parameter
-            force = d3.layout.force(); //.gravity(1.0).friction(0.9).alpha(0);
+            force = d3.layout.force(); //.gravity(1.0).friction(0.2).alpha(0.4);
 
             force.on("tick", tick(centers, model.group));
             labels(centers);
@@ -196,8 +196,8 @@ var budget = (function (module) {
                     item.x += ((foci.x + (foci.dx / 2)) - item.x) * e.alpha;
                 }
                 circles
-                    .each(my.buoyancy(e.alpha))
-                    .each(collide(.21))// was .11 originally
+                    //.each(my.buoyancy(e.alpha))
+                    .each(collide(0.3))// was .11 originally
                     .attr("cx", function (d) { return d.x; })
                     .attr("cy", function (d) { return d.y; });
             }
@@ -216,7 +216,7 @@ var budget = (function (module) {
 
         /**
          * Defines what happens when spheres collide
-         * @param alpha internal alpha cooling parameter is set to 0.1 by default.
+         * @param alpha internal alpha cooling parameter.
          * @returns {Function}
          */
         var collide = function(alpha) {

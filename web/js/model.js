@@ -3,11 +3,31 @@ var budget = (function (module) {
     /** constructor for budget model */
     module.Model = function (originalData) {
 
-        var DEFAULT_RADIUS = 65;
+        var DEFAULT_RADIUS = 60;
         var NUMBER_FORMAT = d3.format(",.0f");
         var DEFAULT_COLOR = "#a58fff";
         // the tooltip dimensions to show in order
         var TIP_DIMENSIONS = ['Program Area', 'Department', 'Account Name', 'Expense Category', 'Major Object', 'Budget Unit'];
+
+        var changeTickValues = [-0.25, -0.15, -0.05, 0.05, 0.15, 0.25];
+        var categorizeChange = function(c){
+            if (isNaN(c)) { return 0;
+            } else if ( c < -0.25) { return -3;
+            } else if ( c < -0.05){ return -2;
+            } else if ( c < -0.001){ return -1;
+            } else if ( c <= 0.001){ return 0;
+            } else if ( c <= 0.05){ return 1;
+            } else if ( c <= 0.25){ return 2;
+            } else { return 3; }
+        };
+        var changeFillColor = d3.scale.ordinal()
+            .domain([-3, -2, -1, 0, 1, 2, 3])
+            .range(["#d84b2a", "#ee9586","#e4b7b2","#AAA","#beccae", "#9caf84", "#7aa25c"]);
+        var changeStrokeColor = d3.scale.ordinal()
+            .domain([-3, -2, -1, 0, 1, 2, 3])
+            .range(["#c72d0a", "#e67761","#d9a097","#999","#a7bb8f", "#7e965d", "#5a8731"]);
+        var tickChangeFormat = d3.format("+%");
+        var changeScale = d3.scale.linear().domain([-0.28,0.28]).range([620,180]).clamp(true);
 
 
         // holds public methods and data
@@ -53,7 +73,8 @@ var budget = (function (module) {
                     }
                     d.approvedPercentChange = Math.min(1000, 100 * (d["Approved Amount"] - priorYearApproved) / priorYearApproved);
                     d.recommendedPercentChange = Math.min(1000, 100* (d["Recommended Amount"] - priorYearRecommended) / priorYearRecommended);
-                    //console.log("d.approvedPercentChange="+ d.approvedPercentChange + " d.recommendedPercentChange="+ d.recommendedPercentChange);
+                    if (d.approvedPercentChange < 0)
+                      console.log("d.approvedPercentChange="+ d.approvedPercentChange + " d.recommendedPercentChange="+ d.recommendedPercentChange);
                 }
             }
             my.colors = computeColors(data);
