@@ -48,22 +48,39 @@ var budget = (function (module) {
         };
 
         var drawGroupLabels = function(centers) {
-            svg.selectAll(".group-label").remove();
+            svg.selectAll(".group-label");
             var maxLen = centers.length > 10 ? 15 : 25;
 
             var labels = svg.selectAll(".group-label").data(centers);
             labels.enter()
                 .append("text")
                 .attr("class", "group-label")
+                .style("font-size", 0)
+                .style("fill", '#ffffff')
+                .append("title")
+                .text(function(d) {return d.name;});
+
+
+            // ENTER + UPDATE
+            labels
                 .text(function (d) {
                     return shortenText(d.name, maxLen);
                 })
+                .transition().duration(1000)
                 .attr("transform", function (d) {
                     return "translate(" + (d.x + (d.dx / 2) - 80) + ", " + (d.y + 30) + ")";
                 })
-                //.style("fill", '#999')
-                .append("title")
-                .text(function(d) {return d.name;});
+                .style("fill", '#aaa')
+                .style("font-size", "14px");
+
+
+            // EXIT
+            labels.exit()
+                .transition().duration(1000)
+                .style("fill", "#ffffff")
+                .style("font-size", 0)
+                .style("text-shadow", "-1px 1px #ffff00")
+                .remove();
         };
 
         my.setSizeAttribute = function(sizeVal) {

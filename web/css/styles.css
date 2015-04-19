@@ -84,7 +84,6 @@ pre {
     position: absolute;
     border-top: dashed 1px #CCC;
     left: 60px;
-    //width: 900px;
 }
 .changeTick p {
     font-size: 10px;
@@ -97,7 +96,6 @@ pre {
 .changeZeroTick {
     border-top: solid 1px #AAA;
     left: 10px;
-    //width: 950px;
 }
 .change-overlay {
     position: absolute;
