@@ -8,26 +8,24 @@ var budget = (function (module) {
         var DEFAULT_COLOR = "#a58fff";
         // the tooltip dimensions to show in order
         var TIP_DIMENSIONS = ['Program Area', 'Department', 'Account Name', 'Expense Category', 'Major Object', 'Budget Unit'];
-
-        var changeTickValues = [-0.25, -0.15, -0.05, 0.05, 0.15, 0.25];
-        var categorizeChange = function(c){
+        var changeCategories = ["< -50%", "-50% to -10%", "-10% to -1%", "No Change", "1% to 10%", "10% to 50%"];
+        var binChange = function(c){
             if (isNaN(c)) { return 0;
-            } else if ( c < -0.25) { return -3;
-            } else if ( c < -0.05){ return -2;
-            } else if ( c < -0.001){ return -1;
-            } else if ( c <= 0.001){ return 0;
-            } else if ( c <= 0.05){ return 1;
-            } else if ( c <= 0.25){ return 2;
-            } else { return 3; }
+            } else if ( c < -0.50) { return "< -50%";
+            } else if ( c < -0.1){ return "-50% to -10%";
+            } else if ( c < -0.001){ return "-10% to -1%";
+            } else if ( c <= 0.001){ return "No Change";
+            } else if ( c <= 0.1){ return "1% to 10%";
+            } else if ( c <= 0.50){ return "10% to 50%";
+            } else { return "> 50%"; }
         };
         var changeFillColor = d3.scale.ordinal()
-            .domain([-3, -2, -1, 0, 1, 2, 3])
+            .domain(changeCategories)
             .range(["#d84b2a", "#ee9586","#e4b7b2","#AAA","#beccae", "#9caf84", "#7aa25c"]);
-        var changeStrokeColor = d3.scale.ordinal()
-            .domain([-3, -2, -1, 0, 1, 2, 3])
-            .range(["#c72d0a", "#e67761","#d9a097","#999","#a7bb8f", "#7e965d", "#5a8731"]);
+        //var changeStrokeColor = d3.scale.ordinal()
+        //    .domain([-3, -2, -1, 0, 1, 2, 3])
+        //    .range(["#c72d0a", "#e67761","#d9a097","#999","#a7bb8f", "#7e965d", "#5a8731"]);
         var tickChangeFormat = d3.format("+%");
-        var changeScale = d3.scale.linear().domain([-0.28,0.28]).range([620,180]).clamp(true);
 
 
         // holds public methods and data
@@ -35,6 +33,7 @@ var budget = (function (module) {
             width: 200,
             height: 200,
             filters: {"Fiscal Year":"2015", "type":"Expenditure"},
+            changeTickValues: [-0.5, -0.25, -0.15, -0.05, 0, 0.05, 0.15, 0.25, 0.5],
             group : '',
             sizeAttr : '',
             colorAttr : ''
@@ -71,10 +70,10 @@ var budget = (function (module) {
                         var priorYearRecommended = priorYearRow["Recommended Amount"];
                         var priorYearApproved = priorYearRow["Approved Amount"];
                     }
-                    d.approvedPercentChange = Math.min(1000, 100 * (d["Approved Amount"] - priorYearApproved) / priorYearApproved);
-                    d.recommendedPercentChange = Math.min(1000, 100* (d["Recommended Amount"] - priorYearRecommended) / priorYearRecommended);
-                    if (d.approvedPercentChange < 0)
-                      console.log("d.approvedPercentChange="+ d.approvedPercentChange + " d.recommendedPercentChange="+ d.recommendedPercentChange);
+                    d.approvedPercentChange = Math.min(10,  (d["Approved Amount"] - priorYearApproved) / priorYearApproved);
+                    d.recommendedPercentChange = Math.min(10, (d["Recommended Amount"] - priorYearRecommended) / priorYearRecommended);
+                    d.approvedPercentChangeBin = binChange(d.approvedPercentChange);
+                    d.recommendedPercentChangeBin = binChange(d.recommendedPercentChange);
                 }
             }
             my.colors = computeColors(data);
@@ -122,12 +121,26 @@ var budget = (function (module) {
         };
 
         my.getColorValues = function() {
-            return my.colorAttr ? my.getColors().domain() : [];
+            if (isColorChangeAttr()) {
+                return changeFillColor.domain();
+            }
+            else {
+                return my.colorAttr ? my.getColors().domain() : [];
+            }
         };
 
         my.getColor = function(row) {
+            if (isColorChangeAttr()) {
+                return changeFillColor(row[my.colorAttr]);
+            }
+            else {
                 return my.colorAttr ? my.getColors()(row[my.colorAttr]) : DEFAULT_COLOR;
+            }
         };
+
+        function isColorChangeAttr() {
+            return my.colorAttr == 'recommendedPercentChangeBin' || my.colorAttr == 'approvedPercentChangeBin';
+        }
 
         my.getColorForValue = function(val) {
             return my.colorAttr ? my.getColors()(val) : DEFAULT_COLOR;
@@ -168,6 +181,8 @@ var budget = (function (module) {
             _.each(categoricColumns, function(col) {
                 colors[col] = d3.scale.category20().domain(data.map( function (d) { return d[col]; }));
             });
+            colors["recommendedPercentChangeBin"] = changeFillColor;
+            colors["approvedPercentChangeBin"] = changeFillColor;
             return colors;
         };
 
@@ -197,10 +212,10 @@ var budget = (function (module) {
                 }
             });
             tip +=
-                "<b>Approved Amount:</b> $" + NUMBER_FORMAT(d['Approved Amount'])
-                + "   (" + NUMBER_FORMAT(d['approvedPercentChange']) + "% changed)<br />" +
-                "<b>Recommended Amount:</b> $" + NUMBER_FORMAT(d['Recommended Amount'])
-                + "   (" + NUMBER_FORMAT(d['recommendedPercentChange']) + "% changed)";
+                "<span style='color:"+ changeFillColor(d['approvedPercentChangeBin'])+"'><b>Approved Amount:</b> $" + NUMBER_FORMAT(d['Approved Amount'])
+                + "   (" + NUMBER_FORMAT(100 * d['approvedPercentChange']) + "% changed)</span><br />" +
+                "<span style='color:"+ changeFillColor(d['recommendedPercentChangeBin'])+"'><b>Recommended Amount:</b> $" + NUMBER_FORMAT(d['Recommended Amount'])
+                + "   (" + NUMBER_FORMAT(100 * d['recommendedPercentChange']) + "% changed)</span>";
             return tip;
         };
 

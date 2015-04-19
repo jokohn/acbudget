@@ -15,6 +15,8 @@ var budget = (function (module) {
         var svg;
         var circles;
         var force;
+        var changeScale = d3.scale.linear().domain([-0.50,0.50]).clamp(true);
+        var tickChangeFormat = d3.format("+%");
 
         /**
          * initialize the chart
@@ -107,6 +109,7 @@ var budget = (function (module) {
 
             force.on("tick", tick(centers, model.group));
             labels(centers);
+            addChangePlotGrid();
 
             circles = svg.selectAll("circle").data(model.filteredData, model.keyFunc);
 
@@ -181,6 +184,23 @@ var budget = (function (module) {
             $(this).popover('show')
         };
 
+        var addChangePlotGrid = function() {
+            changeScale.range([height, 50]);
+
+            var gridLines = d3.select("#changeOverlay").selectAll("div").data(model.changeTickValues);
+
+            // ENTER
+            gridLines.enter()
+                .append("div")
+                .html(function(d) {return "<p>"+ tickChangeFormat(d)+"</p>"})
+                .classed('changeTick', true);
+
+            // ENTER + UPDATE
+            gridLines
+                .style("top", function(d) {return changeScale(d) + 'px';})
+                .style("width", function(d) { return ((d === 0) ? (width - 30) : (width - 90)) + "px"; })
+                .classed('changeZeroTick', function(d) { return d === 0;});
+        };
 
         /** updates a timestep of the physics pase layout animation */
         var tick = function(centers, group) {
@@ -197,7 +217,7 @@ var budget = (function (module) {
                 }
                 circles
                     //.each(my.buoyancy(e.alpha))
-                    .each(collide(0.3))// was .11 originally
+                    .each(collide(0.22))// was .11 originally
                     .attr("cx", function (d) { return d.x; })
                     .attr("cy", function (d) { return d.y; });
             }

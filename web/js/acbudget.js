@@ -9,9 +9,9 @@ $(document).ready(function() {
 /**
  * create the chart based on the data
  * TODO:
- *   - show changes from prior year in scatterplot
+ *   - show changes from prior year in scatter-plot
  *   - only colors for unique values in filtered data
- *   - if the bubble siuze is big, add a label
+ *   - if the bubble size is big, add a label
  *
  * @param model the budget datamodel.
  */
@@ -35,6 +35,30 @@ function create(model) {
     forceChart.render();
 
 
+    $('#year-select').change(function() {
+        doFilter();
+        var sizeAttr = sizeSelect.find(":selected").attr("value");
+        forceChart.setSizeAttribute(sizeAttr);
+        forceChart.render();
+    });
+
+    $('#type-select').change(function() {
+        doFilter();
+        var sizeAttr = sizeSelect.find(":selected").attr("value");
+        forceChart.setSizeAttribute(sizeAttr);
+        forceChart.render();
+    });
+
+    $('#view-select').change(function() {
+        if ($("#view-plot").is(":checked")) {
+            $("#changeOverlay").delay(30).fadeIn(1000);
+        } else {
+            $("#changeOverlay").hide();
+        }
+        //forceChart.setSizeAttribute(sizeAttr);
+        //forceChart.render();
+    });
+
     groupSelect.change(function() {
         forceChart.setGroup(this.value);
         forceChart.render();
@@ -50,19 +74,6 @@ function create(model) {
         forceChart.render();
     });
 
-    $('#year-select').change(function() {
-        doFilter();
-        var sizeAttr = sizeSelect.find(":selected").attr("value");
-        forceChart.setSizeAttribute(sizeAttr);
-        forceChart.render();
-    });
-
-    $('#type-select').change(function() {
-        doFilter();
-        var sizeAttr = sizeSelect.find(":selected").attr("value");
-        forceChart.setSizeAttribute(sizeAttr);
-        forceChart.render();
-    });
 
     $(window).resize(doResize);
 

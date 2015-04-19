@@ -27,22 +27,29 @@
 
   <div class="row">
 
-    <div class="control-item">
-        <label for="year-select">Year:</label>
-        <div id="year-select" class="btn-group selection-year" role="group" data-toggle="buttons">
-            <label class="btn btn-xs btn-default">2014<input id="year2014" type="radio" name="selection-year"/></label>
-            <label class="btn btn-xs btn-default active">2015<input id="year2015" type="radio" name="selection-year" checked/></label>
-        </div>
-    </div>
+      <div class="control-item">
+          <label for="year-select">Year:</label>
+          <div id="year-select" class="btn-group selection-year" role="group" data-toggle="buttons">
+              <label class="btn btn-xs btn-default">2014<input id="year2014" type="radio" name="selection-year"/></label>
+              <label class="btn btn-xs btn-default active">2015<input id="year2015" type="radio" name="selection-year" checked/></label>
+          </div>
+      </div>
 
+      <div class="control-item">
+          <label for="type-select">Type:</label>
+          <div id="type-select" class="btn-group selection-type" role="group" data-toggle="buttons">
+              <label class="btn btn-xs btn-default">Revenue<input id="revenue" type="radio" name="selection-type" /></label>
+              <label class="btn btn-xs btn-default active">Expenditure<input id="expenditure" type="radio" name="selection-type" checked/></label>
+          </div>
+      </div>
 
-    <div class="control-item">
-        <label for="type-select">Type:</label>
-        <div id="type-select" class="btn-group selection-type" role="group" data-toggle="buttons">
-            <label class="btn btn-xs btn-default">Revenue<input id="revenue" type="radio" name="selection-type" /></label>
-            <label class="btn btn-xs btn-default active">Expenditure<input id="expenditure" type="radio" name="selection-type" checked/></label>
-        </div>
-    </div>
+      <div class="control-item">
+          <label for="view-select">View:</label>
+          <div id="view-select" class="btn-group selection-view" role="group" data-toggle="buttons">
+              <label class="btn btn-xs btn-default active">Cluster<input id="view-cluster" type="radio" name="selection-view" checked/></label>
+              <label class="btn btn-xs btn-default">Plot<input id="view-plot" type="radio" name="selection-view" /></label>
+          </div>
+      </div>
 
   </div>
   <div class="row">
@@ -67,8 +74,6 @@
             <option value="Approved Amount">Approved Amount</option>
             <option value="Recommended Amount">Recommended Amount</option>
             <option value="approvedToRecommendedRatio">Approved to Recommended Ratio</option>
-            <option value="approvedPercentChange">Approved % Change</option>
-            <option value="recommendedPercentChange">Recommended % Change</option>
         </select>
       </div>
 
@@ -81,6 +86,8 @@
             <option value="Major Object">Major Object</option>
             <option value="Expense Category">Expense Category</option>
             <option value="Account Name">Account Name</option>
+            <option value="approvedPercentChangeBin">Approved % Change</option>
+            <option value="recommendedPercentChangeBin">Recommended % Change</option>
         </select>
       </div>
       <div>
@@ -91,7 +98,9 @@
       </div>
     </div>
   </div>
-  <div id="chart"></div>
+  <div id="chart">
+      <div id="changeOverlay" class="change-overlay" ></div>
+  </div>
 
 </body>
 </html>
