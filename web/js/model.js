@@ -5,12 +5,16 @@ var budget = (function (module) {
 
         var DEFAULT_RADIUS = 65;
         var NUMBER_FORMAT = d3.format(",.0f");
+        var DEFAULT_COLOR = "#a58fff";
 
         // holds public methods and data
         var my = {
             width: 200,
             height: 200,
-            filters: {"Fiscal Year":"2015", "type":"Expenditure"}
+            filters: {"Fiscal Year":"2015", "type":"Expenditure"},
+            group : '',
+            sizeAttr : '',
+            colorAttr : ''
         };
 
         /** do first time processing of the data once */
@@ -31,10 +35,11 @@ var budget = (function (module) {
             }
             my.colors = computeColors(data);
             my.data = data;
+            my.processData()
         }
 
         /** add more properties to original data */
-        my.processData = function(sizeName) {
+        my.processData = function() {
             var data = my.data;
             var filteredData = [];
 
@@ -46,11 +51,14 @@ var budget = (function (module) {
             }
 
             filteredData.maximums = getMaximums(filteredData);
-            var rmax = filteredData.maximums[sizeName];
-            for (var k = 0; k < filteredData.length; k++) {
-                filteredData[k].radius = (sizeName != '') ? DEFAULT_RADIUS * (Math.sqrt(filteredData[k][sizeName]) / rmax) : 15;
+            if (my.sizeAttr) {
+                var rmax = filteredData.maximums[my.sizeAttr];
+                for (var k = 0; k < filteredData.length; k++) {
+                    filteredData[k].radius = (my.sizeAttr != '') ? DEFAULT_RADIUS * (Math.sqrt(filteredData[k][my.sizeAttr]) / rmax) : 15;
+                }
+                filteredData.maximums.radius = d3.max(_.pluck(filteredData, "radius"));
             }
-            filteredData.maximums.radius = d3.max(_.pluck(filteredData, "radius"));
+
             console.log("maxes= " + JSON.stringify(filteredData.maximums));
             my.filteredData = filteredData;
             return filteredData;
@@ -68,6 +76,14 @@ var budget = (function (module) {
             }
         };
 
+        my.getColorValues = function() {
+            return my.colorAttr ? my.getColors().domain() : [];
+        };
+
+        my.getColor = function(row) {
+                return my.colorAttr ? my.getColors()(row[my.colorAttr]) : DEFAULT_COLOR;
+        };
+
         /** get maximum values for continuous variables. This could be a property of the data */
         var getMaximums = function(data) {
             var getMax = function(data, variable) {
@@ -81,9 +97,9 @@ var budget = (function (module) {
         };
 
         /** get the centers of the clusters using a treemap layout */
-        my.getCenters = function(vname) {
+        my.getCenters = function() {
             var centers, map;
-            centers = _.uniq(_.pluck(my.data, vname)).map(function (d) {
+            centers = _.uniq(_.pluck(my.filteredData, my.group)).map(function (d) {
                 return {name: d, value: 1};
             });
 
@@ -104,8 +120,8 @@ var budget = (function (module) {
             return colors;
         };
 
-        my.getColors = function(attr) {
-            return my.colors[attr];
+        my.getColors = function() {
+            return my.colors[my.colorAttr];
         };
 
         my.setFilter = function(filters) {

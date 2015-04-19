@@ -7,16 +7,10 @@ var budget = (function (module) {
      */
     module.ForceChart = function (div, model) {
 
-        var DEFAULT_COLOR = "#a58fff";
-
         // holds public methods and data
         var my = {
             model: model
         };
-
-        var group = '';
-        var sizeAttr = '';
-        var colorAttr = '';
 
         var chart;
         var filteredData;
@@ -33,11 +27,7 @@ var budget = (function (module) {
 
             chart = $(div);
             svg = d3.select(div).append("svg");
-
             my.onResize();
-            //chart.resize(my.onResize);
-            //my.setColorAttribute(colorAttr);
-            //my.setGroup(group);
         }
 
         my.onResize = function() {
@@ -49,9 +39,9 @@ var budget = (function (module) {
                 .attr("height", height);
         };
 
-        my.setGroup = function(val) {
-            group = val;
-            var centers = model.getCenters(group);
+        my.setGroup = function(group) {
+            model.group = group;
+            var centers = model.getCenters();
             force.on("tick", tick(centers, group));
             labels(centers);
         };
@@ -75,23 +65,19 @@ var budget = (function (module) {
         };
 
         my.setSizeAttribute = function(sizeVal) {
-            filteredData = model.processData(sizeVal);
-            sizeAttr = sizeVal;
+            model.sizeAttr = sizeVal;
+            filteredData = model.processData();
         };
 
-        my.setColorAttribute = function(val) {
-            colorAttr = val;
-            var cmap =  val ? model.getColors(val) : null;
-            var values = val ? model.getColors(val).domain() : [];
-
-            my.renderColorLegend(values, cmap);
+        my.setColorAttribute = function(colorVal) {
+            model.colorAttr = colorVal;
+            my.renderColorLegend();
         };
 
-        my.renderColorLegend = function(values, cmap) {
+        my.renderColorLegend = function() {
 
-            console.log("values  = " + values );
             var legendEntry = d3.select('.colors').selectAll('.color-legend')
-                .data(values, function(d) {return d; });
+                .data(model.getColorValues(), function(d) {return d; });
 
             var entryEnter = legendEntry.enter();
             var parentDiv = entryEnter
@@ -107,7 +93,7 @@ var budget = (function (module) {
 
             // ENTER + UPDATE
             legendEntry.select('.swatch')
-                .style('background', function(d){return cmap(d);});
+                .style('background', my.getColor);
             legendEntry.select('.labelText')
                 .text(function(d) {return shortenText(d, 15); });
 
@@ -117,9 +103,8 @@ var budget = (function (module) {
 
         my.render = function() {
             //console.log("render anim");
-
-            filteredData = model.processData(sizeAttr);
-            var cmap = model.getColors(colorAttr);
+            filteredData = model.processData();
+            var cmap = model.getColors();
 
             circles = svg.selectAll("circle").data(filteredData, model.keyFunc);
 
@@ -136,9 +121,7 @@ var budget = (function (module) {
                 .attr("r", function (d) {
                     return d.radius;
                 })
-                .style("fill", function (d, i) {
-                    return DEFAULT_COLOR;
-                })
+                .style("fill", model.getColor)
                 .on("mouseover", function (d) {
                     showPopover.call(this, d);
                 })
@@ -153,13 +136,11 @@ var budget = (function (module) {
                 .transition()
                 .duration(2000)
                 .attr('r', function(d, i) {
-                    return sizeAttr ? d.radius : 15
+                    return model.sizeAttr ? d.radius : 15
                 })
                 .attr('cx', function(d) { return d.x })
                 .attr('cy', function(d) { return d.y })
-                .style('fill', function (d) {
-                    return colorAttr ? cmap(d[colorAttr]) : DEFAULT_COLOR;
-                });
+                .style('fill', model.getColor);
 
             // EXIT
             circles.exit()
@@ -199,7 +180,8 @@ var budget = (function (module) {
         };
 
 
-        var tick = function(centers, varname) {
+        /** updates a timestep of the physics pase layout animation */
+        var tick = function(centers, group) {
             var focis = {};
             for (var i = 0; i < centers.length; i++) {
                 focis[centers[i].name] = centers[i];
@@ -208,7 +190,7 @@ var budget = (function (module) {
                 for (var i = 0; i < filteredData.length; i++) {
                     var item = filteredData[i];
                     //console.log("item["+varname+"]=" + item[varname]);
-                    var foci = focis[item[varname]];
+                    var foci = focis[item[group]];
 
                     item.y += ((foci.y + (foci.dy / 2)) - item.y) * e.alpha;
                     item.x += ((foci.x + (foci.dx / 2)) - item.x) * e.alpha;
@@ -223,6 +205,11 @@ var budget = (function (module) {
             }
         };
 
+        /**
+         * Defines what happens when spheres collide
+         * @param alpha internal alpha cooling parameter is set to 0.1 by default.
+         * @returns {Function}
+         */
         var collide = function(alpha) {
             var quadtree = d3.geom.quadtree(filteredData);
             return function (d) {
