@@ -50,13 +50,9 @@ function create(model) {
     });
 
     $('#view-select').change(function() {
-        if ($("#view-plot").is(":checked")) {
-            $("#changeOverlay").delay(30).fadeIn(1000);
-        } else {
-            $("#changeOverlay").hide();
-        }
-        //forceChart.setSizeAttribute(sizeAttr);
-        //forceChart.render();
+        var viewMode = $("#view-plot").is(":checked") ? "plot" : "cluster";
+        forceChart.setViewMode(viewMode);
+        forceChart.render();
     });
 
     groupSelect.change(function() {

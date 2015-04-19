@@ -1,7 +1,10 @@
 var budget = (function (module) {
 
     /**
-     * constructor for force chart
+     * Constructor for force chart.
+     * There are two ways to show the data :
+     *   "cluster" - groups are clustered around treemap layout centroids
+     *   "plot" - groups are scatterplotted so that the group dim is on the x and the change percent on the y.
      * @param div unique jquery selector for the chart
      * @param model the data model to show
      */
@@ -9,6 +12,7 @@ var budget = (function (module) {
 
         // holds public methods and data
         var my = {
+            viewMode : "cluster"  // "cluster" or "plot"
         };
 
         var chart;
@@ -43,7 +47,7 @@ var budget = (function (module) {
             model.group = group;
         };
 
-        var labels = function(centers) {
+        var drawGroupLabels = function(centers) {
             svg.selectAll(".group-label").remove();
             var maxLen = centers.length > 10 ? 15 : 25;
 
@@ -69,6 +73,15 @@ var budget = (function (module) {
         my.setColorAttribute = function(colorVal) {
             model.colorAttr = colorVal;
             my.renderColorLegend();
+        };
+
+        my.setViewMode = function(viewMode) {
+            my.viewMode = viewMode;
+            if ($("#view-plot").is(":checked")) {
+                $("#changeOverlay").delay(30).fadeIn(1000);
+            } else {
+                $("#changeOverlay").hide();
+            }
         };
 
         my.renderColorLegend = function() {
@@ -108,7 +121,8 @@ var budget = (function (module) {
             force = d3.layout.force(); //.gravity(1.0).friction(0.2).alpha(0.4);
 
             force.on("tick", tick(centers, model.group));
-            labels(centers);
+
+            drawGroupLabels(my.viewMode == "cluster" ? centers: []);
             addChangePlotGrid();
 
             circles = svg.selectAll("circle").data(model.filteredData, model.keyFunc);
