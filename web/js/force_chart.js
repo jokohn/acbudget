@@ -4,7 +4,7 @@ var budget = (function (module) {
      * Constructor for force chart.
      * There are two ways to show the data :
      *   "cluster" - groups are clustered around treemap layout centroids
-     *   "plot" - groups are scatterplotted so that the group dim is on the x and the change percent on the y.
+     *   "plot" - groups are scatter-plotted so that the group dim is on the x and the change percent on the y.
      * @param div unique jquery selector for the chart
      * @param model the data model to show
      */
@@ -17,8 +17,6 @@ var budget = (function (module) {
 
         var chart;
         var svg;
-        var circles;
-        var force;
         var changeScale = d3.scale.linear().domain([-0.50,0.50]).clamp(true);
         var tickChangeFormat = d3.format("+%");
 
@@ -50,35 +48,40 @@ var budget = (function (module) {
         var drawGroupLabels = function(centers) {
             svg.selectAll(".group-label");
             var maxLen = centers.length > 10 ? 15 : 25;
+            var position = function (d) {
+                return "translate(" + (d.x + (d.dx / 2) - 80) + ", " + (d.y + 30) + ")";
+            };
 
             var labels = svg.selectAll(".group-label").data(centers);
+
             labels.enter()
                 .append("text")
+                .attr("transform", position)
                 .attr("class", "group-label")
                 .style("font-size", 0)
                 .style("fill", '#ffffff')
-                .append("title")
-                .text(function(d) {return d.name;});
-
+                //.append("title")
+                //.text(function(d) {return d.name;});
 
             // ENTER + UPDATE
             labels
                 .text(function (d) {
                     return shortenText(d.name, maxLen);
                 })
-                .transition().duration(1000)
-                .attr("transform", function (d) {
-                    return "translate(" + (d.x + (d.dx / 2) - 80) + ", " + (d.y + 30) + ")";
-                })
+                //.transition().duration(1000)
+                .attr("transform", position)
                 .style("fill", '#aaa')
-                .style("font-size", "14px");
-
+                .style("font-size", "14px")
+                .append("title")  // appending here does not seem right.
+                .text(function(d) {
+                    return d.name;
+                });
 
             // EXIT
             labels.exit()
                 .transition().duration(1000)
                 .style("fill", "#ffffff")
-                .style("font-size", 0)
+                .style("font-size", 9)
                 .style("text-shadow", "-1px 1px #ffff00")
                 .remove();
         };
@@ -94,15 +97,9 @@ var budget = (function (module) {
 
         my.setViewMode = function(viewMode) {
             my.viewMode = viewMode;
-            if ($("#view-plot").is(":checked")) {
-                $("#changeOverlay").delay(30).fadeIn(1000);
-            } else {
-                $("#changeOverlay").hide();
-            }
         };
 
         my.renderColorLegend = function() {
-
             var legendEntry = d3.select('.colors').selectAll('.color-legend')
                 .data(model.getColorValues(), function(d) {return d; });
 
@@ -128,44 +125,71 @@ var budget = (function (module) {
             legendEntry.exit().remove();
         };
 
+        /** the circles get placed in clusters or in a plot formation */
         my.render = function() {
             model.processData();
-
-            var centers = model.getCenters();
-            // .friction(0) freezes
-            // .theta(0.8)
-            // .alpha(0.1)  cooling parameter
-            force = d3.layout.force(); //.gravity(1.0).friction(0.2).alpha(0.4);
-
-            force.on("tick", tick(centers, model.group));
-
-            drawGroupLabels(my.viewMode == "cluster" ? centers: []);
-            addChangePlotGrid();
-
-            circles = svg.selectAll("circle").data(model.filteredData, model.keyFunc);
+            var circles = svg.selectAll("circle").data(model.filteredData, model.keyFunc);
 
             // ENTER
             circles.enter()
                 .append("circle")
                 .attr("class", "node")
-                .attr("cx", function (d) {
-                    return d.x;
-                })
-                .attr("cy", function (d) {
-                    return d.y;
-                })
-                .attr("r", function (d) {
-                    return d.radius;
-                })
+                .attr("cx", function (d) {return d.x;})
+                .attr("cy", function (d) {return d.y;})
+                .attr("r", function (d) {return d.radius;})
                 .style("fill", model.getColor)
                 .on("mouseover", function (d) {
                     showPopover.call(this, d);
                 })
                 .on("mouseout", function (d) {
                     removePopovers();
+                });
+
+            if (my.viewMode == "cluster") {
+                my.renderAsClusters(circles);
+            }
+            else {
+                my.renderAsPlot(circles);
+            }
+        };
+
+        my.renderAsClusters = function(circles) {
+            var centers = model.getCenters();
+            // .friction(0) freezes
+            // .theta(0.8)
+            // .alpha(0.1)  cooling parameter
+            var force = d3.layout.force(); //.gravity(1.0).friction(0.2).alpha(0.4);
+
+            force.on("tick", tick(centers, model.group, circles));
+
+            drawGroupLabels(centers);
+            addChangePlotGrid([]);
+
+            // UPDATE
+            circles
+                //.transition()
+                //.duration(2000)
+                .attr('r', function(d, i) {
+                    return model.sizeAttr ? d.radius : 15
                 })
-                .append("text")
-                .attr();
+                .attr('cx', function(d) { return d.x })
+                .attr('cy', function(d) { return d.y })
+                .style('fill', model.getColor);
+
+            // EXIT
+            circles.exit()
+                .transition()
+                .duration(1000)
+                .attr('r', 0)
+                .remove();
+
+            force.start();
+        };
+
+        my.renderAsPlot = function(circles) {
+
+            drawGroupLabels([]);
+            addChangePlotGrid(model.changeTickValues);
 
             // UPDATE
             circles
@@ -184,8 +208,6 @@ var budget = (function (module) {
                 .duration(1000)
                 .attr('r', 0)
                 .remove();
-
-            force.start();
         };
 
         var shortenText = function(text, maxLen) {
@@ -215,10 +237,9 @@ var budget = (function (module) {
             $(this).popover('show')
         };
 
-        var addChangePlotGrid = function() {
+        var addChangePlotGrid = function(tickValues) {
             changeScale.range([height, 50]);
-
-            var gridLines = d3.select("#changeOverlay").selectAll("div").data(model.changeTickValues);
+            var gridLines = d3.select("#changeOverlay").selectAll("div").data(tickValues);
 
             // ENTER
             gridLines.enter()
@@ -231,10 +252,16 @@ var budget = (function (module) {
                 .style("top", function(d) {return changeScale(d) + 'px';})
                 .style("width", function(d) { return ((d === 0) ? (width - 30) : (width - 90)) + "px"; })
                 .classed('changeZeroTick', function(d) { return d === 0;});
+
+            // EXIT
+            gridLines.exit()
+                .transition().duration(1500)
+                .style("width", "0px")
+                .remove();
         };
 
         /** updates a timestep of the physics pase layout animation */
-        var tick = function(centers, group) {
+        var tick = function(centers, group, circles) {
             var focis = {};
             for (var i = 0; i < centers.length; i++) {
                 focis[centers[i].name] = centers[i];
