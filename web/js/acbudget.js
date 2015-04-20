@@ -74,7 +74,7 @@ function create(model) {
     $(window).resize(doResize);
 
     function doResize(e) {
-        var height = Math.max($(window).innerHeight() - $("#chart-header").innerHeight() - 90, 500);
+        var height = Math.max($(window).innerHeight() - $("#chart-header").innerHeight() - 80, 500);
         var width = Math.max($(window).innerWidth() - 20, 500);
         console.log("w="+ width + " h=" + height + " e=" + e);
 

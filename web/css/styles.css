@@ -4,12 +4,12 @@ body {
     height: 1000px;    
     overflow:auto;
 }
+h1 {
+    text-align: center;
+}
 #chart {
     width:100%;
     height:800px;
-    //display: "flex";
-    //border: solid 1px green;
-    //margin: 2px;
 }
 circle {
     stroke: #555;
@@ -43,11 +43,15 @@ circle:hover {
     text-shadow: -1px 1px #000;
 }
 .selection-mode {
-    align:'left';
+    text-align: left;
 }
 .selected-tip-dimension {
     font-size: 12px;
     color: #5544cc;
+}
+.tip-header {
+    width:200px;
+    text-align: center;
 }
 .color-legend {
     display: flex;
@@ -101,6 +105,5 @@ pre {
 .change-overlay {
     position: absolute;
     z-index: 40;
-    //display:none;
     color: #888888;
 }

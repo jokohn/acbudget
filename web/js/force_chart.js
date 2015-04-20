@@ -17,6 +17,7 @@ var budget = (function (module) {
 
         var chart;
         var svg;
+        var force;
         var changeScale = d3.scale.linear().domain([-0.50,0.50]).clamp(true);
         var tickChangeFormat = d3.format("+%");
 
@@ -160,7 +161,7 @@ var budget = (function (module) {
             // .friction(0) freezes
             // .theta(0.8)
             // .alpha(0.1)  cooling parameter
-            var force = d3.layout.force(); //.gravity(1.0).friction(0.2).alpha(0.4);
+            force = d3.layout.force(); //.gravity(1.0).friction(0.2).alpha(0.4);
 
             force.on("tick", tick(centers, model.group, circles));
 
@@ -170,8 +171,8 @@ var budget = (function (module) {
             // UPDATE
             circles
                 .transition().duration(1000)
-                .attr('r', function(d, i) {
-                    return model.sizeAttr ? d.radius : 15
+                .attr('r', function(d) {
+                    return model.sizeAttr ? d.radius : 15;
                 })
                 .attr('cx', function(d) { return d.x })
                 .attr('cy', function(d) { return d.y })
@@ -179,8 +180,7 @@ var budget = (function (module) {
 
             // EXIT
             circles.exit()
-                .transition()
-                .duration(1000)
+                .transition().duration(1000)
                 .attr('r', 0)
                 .remove();
 
@@ -189,24 +189,36 @@ var budget = (function (module) {
 
         my.renderAsPlot = function(circles) {
 
+            // stop the force layout simulation to prevent it from conflicting with plot layout.
+            if (force) {
+                force.stop();
+                force = null;
+            }
+
             drawGroupLabels([]);
             addChangePlotGrid(model.changeTickValues);
 
+            var groupValues = model.getGroupValues();
+            console.log("groupValues = groupValues"+ groupValues);
+            var xScale = d3.scale.ordinal().domain(groupValues).rangePoints([40, model.width-10], 1);
+
             // UPDATE
             circles
-                .transition()
-                .duration(2000)
-                .attr('r', function(d, i) {
-                    return model.sizeAttr ? d.radius : 15
+                .transition().duration(2000)
+                .attr('r', function(d) {
+                    return model.sizeAttr ? d.radius : 15;
                 })
-                .attr('cx', function(d) { return d.x })
-                .attr('cy', function(d) { return d.y })
+                .attr('cx', function(d) {
+                    return xScale(d[model.group]);
+                })
+                .attr('cy', function(d) {
+                    return changeScale(d.approvedPercentChange);
+                })
                 .style('fill', model.getColor);
 
             // EXIT
             circles.exit()
-                .transition()
-                .duration(1000)
+                .transition().duration(1000)
                 .attr('r', 0)
                 .remove();
         };
@@ -239,7 +251,7 @@ var budget = (function (module) {
         };
 
         var addChangePlotGrid = function(tickValues) {
-            changeScale.range([height, 50]);
+            changeScale.range([height - 20, 50]);
             var gridLines = d3.select("#changeOverlay").selectAll("div").data(tickValues);
 
             // ENTER
@@ -274,11 +286,13 @@ var budget = (function (module) {
                     item.y += ((foci.y + (foci.dy / 2)) - item.y) * e.alpha;
                     item.x += ((foci.x + (foci.dx / 2)) - item.x) * e.alpha;
                 }
-                circles
-                    //.each(my.buoyancy(e.alpha))
-                    .each(collide(0.22))// was .11 originally
-                    .attr("cx", function (d) { return d.x; })
-                    .attr("cy", function (d) { return d.y; });
+                if (e.alpha > 0) {
+                    circles
+                        //.each(my.buoyancy(e.alpha))
+                        .each(collide(0.22))// was .11 originally
+                        .attr("cx", function (d) { return d.x; })
+                        .attr("cy", function (d) { return d.y; });
+                }
             }
         };
 

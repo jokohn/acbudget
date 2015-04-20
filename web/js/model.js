@@ -8,20 +8,28 @@ var budget = (function (module) {
         var DEFAULT_COLOR = "#a58fff";
         // the tooltip dimensions to show in order
         var TIP_DIMENSIONS = ['Program Area', 'Department', 'Account Name', 'Expense Category', 'Major Object', 'Budget Unit'];
-        var changeCategories = ["< -50%", "-50% to -10%", "-10% to -1%", "No Change", "1% to 10%", "10% to 50%"];
+        var changeCategories = ["< Less than -50%", "-50% to -10%", "-10% to -1%", "No Change", "1% to 10%", "10% to 50%", "50% or greater"];
         var binChange = function(c){
             if (isNaN(c)) { return 0;
-            } else if ( c < -0.50) { return "< -50%";
-            } else if ( c < -0.1){ return "-50% to -10%";
-            } else if ( c < -0.001){ return "-10% to -1%";
-            } else if ( c <= 0.001){ return "No Change";
-            } else if ( c <= 0.1){ return "1% to 10%";
-            } else if ( c <= 0.50){ return "10% to 50%";
-            } else { return "> 50%"; }
+            } else if ( c < -0.50) { return changeCategories[0];
+            } else if ( c < -0.1){ return changeCategories[1];
+            } else if ( c < -0.001){ return changeCategories[2];
+            } else if ( c <= 0.001){ return changeCategories[3];
+            } else if ( c <= 0.1){ return changeCategories[4];
+            } else if ( c <= 0.50){ return changeCategories[5];
+            } else { return changeCategories[6]; }
         };
         var changeFillColor = d3.scale.ordinal()
             .domain(changeCategories)
-            .range(["#d84b2a", "#ee9586","#e4b7b2","#AAA","#beccae", "#9caf84", "#7aa25c"]);
+            .range([
+                "#d84b2a",
+                "#ee9586",
+                "#e4b7b2",
+                "#aaaaaa",
+                "#beccae",
+                "#9caf84",
+                "#5aa33c" // original was #7aa25c"
+            ]);
         //var changeStrokeColor = d3.scale.ordinal()
         //    .domain([-3, -2, -1, 0, 1, 2, 3])
         //    .range(["#c72d0a", "#e67761","#d9a097","#999","#a7bb8f", "#7e965d", "#5a8731"]);
@@ -67,8 +75,8 @@ var budget = (function (module) {
                     var priorYearRecommended = 1;
                     var priorYearApproved = 1;
                     if (priorYearRow) {
-                        var priorYearRecommended = priorYearRow["Recommended Amount"];
-                        var priorYearApproved = priorYearRow["Approved Amount"];
+                        priorYearRecommended = priorYearRow["Recommended Amount"];
+                        priorYearApproved = priorYearRow["Approved Amount"];
                     }
                     d.approvedPercentChange = Math.min(10,  (d["Approved Amount"] - priorYearApproved) / priorYearApproved);
                     d.recommendedPercentChange = Math.min(10, (d["Recommended Amount"] - priorYearRecommended) / priorYearRecommended);
@@ -163,7 +171,7 @@ var budget = (function (module) {
         /** get the centers of the clusters using a treemap layout */
         my.getCenters = function() {
             var centers, map;
-            centers = _.uniq(_.pluck(my.data, my.group)).map(function (d) {
+            centers = my.getGroupValues().map(function (d) {
                 return {name: d, value: 1};
             });
 
@@ -171,6 +179,10 @@ var budget = (function (module) {
             map.nodes({children: centers});
 
             return centers;
+        };
+
+        my.getGroupValues = function() {
+            return _.uniq(_.pluck(my.data, my.group));
         };
 
         var computeColors = function(data) {
@@ -200,7 +212,7 @@ var budget = (function (module) {
         };
 
         my.serialize = function(d) {
-            var tip = " --- <b>" + d.type + " for " +  d['Fiscal Year'] +"</b> --- <br/>";
+            var tip = "<div class='tip-header'><b>" + d['Fiscal Year'] + " " + d.type + "</b></div>";
             _.each(TIP_DIMENSIONS, function(dimension) {
                 if (dimension == my.group) {
                     tip += "<span class='selected-tip-dimension'><b>" + dimension + ": </b>" + d[dimension] + "</span><br/>";
