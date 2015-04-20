@@ -59,7 +59,7 @@ var budget = (function (module) {
                 .attr("transform", position)
                 .attr("class", "group-label")
                 .style("font-size", 0)
-                .style("fill", '#ffffff')
+                .style("fill", '#ffffff');
                 //.append("title")
                 //.text(function(d) {return d.name;});
 
@@ -68,10 +68,11 @@ var budget = (function (module) {
                 .text(function (d) {
                     return shortenText(d.name, maxLen);
                 })
-                //.transition().duration(1000)
                 .attr("transform", position)
+                .transition().duration(1000)
                 .style("fill", '#aaa')
                 .style("font-size", "14px")
+            labels
                 .append("title")  // appending here does not seem right.
                 .text(function(d) {
                     return d.name;
@@ -85,6 +86,7 @@ var budget = (function (module) {
                 .style("text-shadow", "-1px 1px #ffff00")
                 .remove();
         };
+
 
         my.setSizeAttribute = function(sizeVal) {
             model.sizeAttr = sizeVal;
@@ -167,8 +169,7 @@ var budget = (function (module) {
 
             // UPDATE
             circles
-                //.transition()
-                //.duration(2000)
+                .transition().duration(1000)
                 .attr('r', function(d, i) {
                     return model.sizeAttr ? d.radius : 15
                 })
@@ -255,7 +256,7 @@ var budget = (function (module) {
 
             // EXIT
             gridLines.exit()
-                .transition().duration(1500)
+                .transition().delay(1000).duration(1500)
                 .style("width", "0px")
                 .remove();
         };
