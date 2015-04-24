@@ -31,10 +31,7 @@ function create(model) {
     forceChart.setGroup(groupSelect.find(":selected").attr("value"));
     forceChart.setSizeAttribute(sizeSelect.find(":selected").attr("value"));
     forceChart.setColorAttribute(colorSelect.find(":selected").attr("value"));
-
     doResize(); // initial sizing
-    forceChart.render();
-
 
     $('#year-select').change(function() {
         doFilter();
@@ -75,8 +72,8 @@ function create(model) {
     $(window).resize(doResize);
 
     function doResize(e) {
-        var height = Math.max($(window).innerHeight() - $("#chart-header").innerHeight() - 60, 500);
-        var width = Math.max($(window).innerWidth() - 120, 350);
+        var height = Math.max($(window).innerHeight() - $("#chart-header").innerHeight() - 100, 350);
+        var width = Math.max($(window).innerWidth() - 70, 500);
         //console.log("w="+ width + " h=" + height + " e=" + e);
 
         forceChart.setSize(width, height);

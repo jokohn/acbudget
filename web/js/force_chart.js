@@ -18,7 +18,7 @@ var budget = (function (module) {
         var chart;
         var svg;
         var force;
-        var changeScale = d3.scale.linear().domain([-0.50,0.50]).clamp(true);
+        var changeScale = d3.scale.linear().domain([-0.50, 0.50]).clamp(true);
         var plotXScale = d3.scale.ordinal();
         var tickChangeFormat = d3.format("+%");
 
@@ -141,7 +141,7 @@ var budget = (function (module) {
             var entryEnter = legendEntry.enter();
             var parentDiv = entryEnter
                 .append('div')
-                .attr('class', "col-xs-4 col-md-2 color-legend")
+                .attr('class', "col-xs-6 col-sm-4 col-md-2 col-lg-2 color-legend")
                 .attr("title", function(d) {return d; });
             parentDiv
                 .append('span')
@@ -154,7 +154,7 @@ var budget = (function (module) {
             legendEntry.select('.swatch')
                 .style('background', model.getColorForValue);
             legendEntry.select('.labelText')
-                .text(function(d) {return shortenText(d, 25); });
+                .text(function(d) {return shortenText(d, 26); });
 
             // EXIT
             legendEntry.exit().remove();
@@ -225,7 +225,6 @@ var budget = (function (module) {
             // stop the force layout simulation to prevent it from conflicting with plot layout.
             if (force) {
                 force.stop();
-                force = null;
             }
 
             addChangePlotGrid(model.changeTickValues);

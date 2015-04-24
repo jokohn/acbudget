@@ -5,7 +5,7 @@ var budget = (function (module) {
     /** constructor for budget model */
     module.Model = function (originalData) {
 
-        var RADIUS_SCALE = 50;
+        var RADIUS_SCALE = 40;
         var NUMBER_FORMAT = d3.format(",.0f");
         var DEFAULT_COLOR = "#a58fff";
         // the tooltip dimensions to show in order
@@ -108,7 +108,7 @@ var budget = (function (module) {
                 var rmax = filteredData.maximums[my.sizeAttr];
                 for (var k = 0; k < filteredData.length; k++) {
                     filteredData[k].radius = (my.sizeAttr != '') ?
-                            RADIUS_SCALE * (Math.sqrt(filteredData[k][my.sizeAttr]) / rmax) :
+                            RADIUS_SCALE * (Math.cbrt(filteredData[k][my.sizeAttr]) / rmax) :
                             budget.DEFAULT_RADIUS;
                 }
                 filteredData.maximums.radius = d3.max(_.pluck(filteredData, "radius"));
@@ -161,7 +161,7 @@ var budget = (function (module) {
         /** get maximum values for continuous variables. This could be a property of the data */
         var getMaximums = function(data) {
             var getMax = function(data, variable) {
-                return Math.sqrt(d3.max(_.pluck(data, variable)));
+                return Math.cbrt(d3.max(_.pluck(data, variable)));
             };
             return {
                 'Approved Amount': getMax(data, 'Approved Amount'),
