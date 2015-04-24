@@ -9,8 +9,7 @@ $(document).ready(function() {
 /**
  * create the chart based on the data
  * TODO:
- *   - fade in labels vertically on bg of scatter
- *   - fix bugs around layout
+ *   - fix bugs around cluster layout
  *   - if the bubble size is big, add a label
  *   - prepare for 3 min demo
  *   - only colors for unique values in filtered data

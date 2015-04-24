@@ -9,7 +9,7 @@ var budget = (function (module) {
         var NUMBER_FORMAT = d3.format(",.0f");
         var DEFAULT_COLOR = "#a58fff";
         // the tooltip dimensions to show in order
-        var TIP_DIMENSIONS = ['Program Area', 'Department', 'Account Name', 'Expense Category', 'Major Object', 'Budget Unit'];
+        var TIP_DIMENSIONS = ['Program Area', 'Major Object', 'Expense Category', 'Department', 'Account Name', 'Budget Unit'];
         var changeCategories = ["< Less than -50%", "-50% to -10%", "-10% to -1%", "No Change", "1% to 10%", "10% to 50%", "50% or greater"];
         var binChange = function(c){
             if (isNaN(c)) { return 0;
@@ -224,7 +224,7 @@ var budget = (function (module) {
                     tip += "<span class='selected-tip-dimension'><b>" + dimension + ": </b>" + d[dimension] + "</span><br/>";
                 }
                 else {
-                    tip += "<b>" + dimension + ": </b>" + d['Department'] + "<br/>";
+                    tip += "<b>" + dimension + ": </b>" + d[dimension] + "<br/>";
                 }
             });
             tip +=

@@ -93,22 +93,22 @@ pre {
     left: 60px;
 }
 .changeTick p {
-    font-size: 10px;
+    font-size: 14px;
     text-align: left;
     position: absolute;
-    color:#000;
+    color:#222;
     left: -50px;
     width: 40px;
     top: -8px;
 }
 .changeZeroTick {
-    border-top: solid 1px #999;
+    border-top: solid 1px #aaa;
     left: 10px;
 }
 .change-overlay {
     position: absolute;
     z-index: 40;
-    color: #888888;
+    color: #999;
 }
 .plot-group-label {
     fill: #ddd;
