@@ -101,8 +101,7 @@ var budget = (function (module) {
             verticalText.enter()
                 .insert("text", ":first-child")
                 .attr("class", "plot-group-label")
-                .style("font-size", 0)
-                .text(function(d) {return d;});
+                .style("font-size", 0);
 
             // ENTER + UPDATE
             verticalText
@@ -110,7 +109,8 @@ var budget = (function (module) {
                 .attr("transform", function(d) {
                     return " translate(" + (xOffset + plotXScale(d)) + ",70)rotate(90)";
                 })
-                .style("font-size", fontSize);
+                .style("font-size", fontSize)
+                .text(function(d) {return d;});
 
             // EXIT
             verticalText.exit()
