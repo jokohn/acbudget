@@ -1,9 +1,12 @@
 var budget = (function (module) {
 
+    module.DEFAULT_RADIUS = 10;
+
     /** constructor for budget model */
     module.Model = function (originalData) {
 
-        var DEFAULT_RADIUS = 60;
+
+        var RADIUS_SCALE = 50;
         var NUMBER_FORMAT = d3.format(",.0f");
         var DEFAULT_COLOR = "#a58fff";
         // the tooltip dimensions to show in order
@@ -105,7 +108,9 @@ var budget = (function (module) {
             if (my.sizeAttr) {
                 var rmax = filteredData.maximums[my.sizeAttr];
                 for (var k = 0; k < filteredData.length; k++) {
-                    filteredData[k].radius = (my.sizeAttr != '') ? DEFAULT_RADIUS * (Math.sqrt(filteredData[k][my.sizeAttr]) / rmax) : 15;
+                    filteredData[k].radius = (my.sizeAttr != '') ?
+                            RADIUS_SCALE * (Math.sqrt(filteredData[k][my.sizeAttr]) / rmax) :
+                            budget.DEFAULT_RADIUS;
                 }
                 filteredData.maximums.radius = d3.max(_.pluck(filteredData, "radius"));
             }

@@ -109,7 +109,7 @@ var budget = (function (module) {
             var entryEnter = legendEntry.enter();
             var parentDiv = entryEnter
                 .append('div')
-                .attr('class', "col-xs-2 color-legend")
+                .attr('class', "col-xs-4 col-md-2 color-legend")
                 .attr("title", function(d) {return d; });
             parentDiv
                 .append('span')
@@ -172,7 +172,7 @@ var budget = (function (module) {
             circles
                 .transition().duration(1000)
                 .attr('r', function(d) {
-                    return model.sizeAttr ? d.radius : 15;
+                    return model.sizeAttr ? d.radius : budget.DEFAULT_RADIUS;
                 })
                 .attr('cx', function(d) { return d.x })
                 .attr('cy', function(d) { return d.y })
@@ -206,7 +206,7 @@ var budget = (function (module) {
             circles
                 .transition().duration(2000)
                 .attr('r', function(d) {
-                    return model.sizeAttr ? d.radius : 15;
+                    return model.sizeAttr ? d.radius : budget.DEFAULT_RADIUS;
                 })
                 .attr('cx', function(d) {
                     return xScale(d[model.group]);
@@ -288,24 +288,12 @@ var budget = (function (module) {
                 }
                 if (e.alpha > 0) {
                     circles
-                        //.each(my.buoyancy(e.alpha))
                         .each(collide(0.22))// was .11 originally
                         .attr("cx", function (d) { return d.x; })
                         .attr("cy", function (d) { return d.y; });
                 }
             }
         };
-
-        my.buoyancy = function(alpha) {
-            var defaultGravity = 0.8;
-            var defaultRadius = 65;
-
-            return function(d){
-                var targetY = (svg.attr('height') / 2) -  defaultRadius;
-                d.y += (targetY - d.y) * defaultGravity * alpha * alpha * alpha * 100;
-            };
-        };
-
 
         /**
          * Defines what happens when spheres collide

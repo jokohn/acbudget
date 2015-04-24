@@ -4,8 +4,11 @@ body {
     height: 1000px;    
     overflow:auto;
 }
-h1 {
+h2 {
+    font-size: 24px;
     text-align: center;
+    margin-top:4px;
+    padding:1px;
 }
 #chart {
     width:100%;
@@ -46,7 +49,7 @@ circle:hover {
     text-align: left;
 }
 .selected-tip-dimension {
-    font-size: 12px;
+    font-size: 11px;
     color: #5544cc;
 }
 .tip-header {
@@ -56,15 +59,15 @@ circle:hover {
 .color-legend {
     display: flex;
     align-items: center;
-    height:22px;
-    font-size:10px;
+    height:16px;
+    font-size:9px;
     font-weight:normal;
 }
 
 .swatch {
-    width: 16px;
-    height: 16px;
-    margin: 3px;
+    width: 12px;
+    height: 12px;
+    margin: 2px;
 }
 pre {
     display:none;
@@ -107,3 +110,7 @@ pre {
     z-index: 40;
     color: #888888;
 }
+.row .control-item label, select.form-control {
+    font-size: 10px;
+}
+

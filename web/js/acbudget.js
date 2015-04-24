@@ -76,8 +76,8 @@ function create(model) {
     $(window).resize(doResize);
 
     function doResize(e) {
-        var height = Math.max($(window).innerHeight() - $("#chart-header").innerHeight() - 80, 500);
-        var width = Math.max($(window).innerWidth() - 20, 500);
+        var height = Math.max($(window).innerHeight() - $("#chart-header").innerHeight() - 60, 500);
+        var width = Math.max($(window).innerWidth() - 120, 400);
         console.log("w="+ width + " h=" + height + " e=" + e);
 
         forceChart.setSize(width, height);
