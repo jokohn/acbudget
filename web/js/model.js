@@ -5,7 +5,7 @@ var budget = (function (module) {
     /** constructor for budget model */
     module.Model = function (originalData) {
 
-        var RADIUS_SCALE = 40;
+        var RADIUS_SCALE = 30;
         var NUMBER_FORMAT = d3.format(",.0f");
         var DEFAULT_COLOR = "#a58fff";
         // the tooltip dimensions to show in order
