@@ -5,7 +5,6 @@ var budget = (function (module) {
     /** constructor for budget model */
     module.Model = function (originalData) {
 
-
         var RADIUS_SCALE = 50;
         var NUMBER_FORMAT = d3.format(",.0f");
         var DEFAULT_COLOR = "#a58fff";

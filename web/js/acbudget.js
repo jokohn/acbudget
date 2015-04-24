@@ -77,8 +77,8 @@ function create(model) {
 
     function doResize(e) {
         var height = Math.max($(window).innerHeight() - $("#chart-header").innerHeight() - 60, 500);
-        var width = Math.max($(window).innerWidth() - 120, 400);
-        console.log("w="+ width + " h=" + height + " e=" + e);
+        var width = Math.max($(window).innerWidth() - 120, 350);
+        //console.log("w="+ width + " h=" + height + " e=" + e);
 
         forceChart.setSize(width, height);
     }
@@ -88,7 +88,6 @@ function create(model) {
         var isExpenditure = $("#expenditure").is(":checked");
         var year = isYear2014 ? "2014" : "2015";
         var type = isExpenditure ? "Expenditure" : "Revenue";
-        console.log("type  " + type + " year " + year);
 
         model.setFilter({"Fiscal Year":year, "type":type});
     }

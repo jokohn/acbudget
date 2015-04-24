@@ -110,6 +110,10 @@ pre {
     z-index: 40;
     color: #888888;
 }
+.plot-group-label {
+    fill: #ddd;
+    font-weight: bold;
+}
 .row .control-item label, select.form-control {
     font-size: 10px;
 }

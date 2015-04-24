@@ -19,6 +19,7 @@ var budget = (function (module) {
         var svg;
         var force;
         var changeScale = d3.scale.linear().domain([-0.50,0.50]).clamp(true);
+        var plotXScale = d3.scale.ordinal();
         var tickChangeFormat = d3.format("+%");
 
         /**
@@ -46,7 +47,7 @@ var budget = (function (module) {
             model.group = group;
         };
 
-        var drawGroupLabels = function(centers) {
+        var drawClusterGroupLabels = function(centers) {
             svg.selectAll(".group-label");
             var maxLen = centers.length > 10 ? 15 : 25;
             var position = function (d) {
@@ -72,7 +73,7 @@ var budget = (function (module) {
                 .attr("transform", position)
                 .transition().duration(1000)
                 .style("fill", '#aaa')
-                .style("font-size", "14px")
+                .style("font-size", "14px");
             labels
                 .append("title")  // appending here does not seem right.
                 .text(function(d) {
@@ -83,8 +84,39 @@ var budget = (function (module) {
             labels.exit()
                 .transition().duration(1000)
                 .style("fill", "#ffffff")
-                .style("font-size", 9)
+                .style("font-size", 10)
                 .style("text-shadow", "-1px 1px #ffff00")
+                .remove();
+        };
+
+        var drawPlotGroupLabels = function(groupValues) {
+
+            var num = groupValues.length;
+            var xOffset = Math.max(0, 35 - num);
+            var fontSize = Math.max(9, 40 - num);
+            var verticalText = svg.selectAll("text.plot-group-label")
+                .data(groupValues);
+
+            // ENTER
+            verticalText.enter()
+                .insert("text", ":first-child")
+                .attr("class", "plot-group-label")
+                .style("font-size", 0)
+                .text(function(d) {return d;});
+
+            // ENTER + UPDATE
+            verticalText
+                .transition().duration(1000)
+                .attr("transform", function(d) {
+                    return " translate(" + (xOffset + plotXScale(d)) + ",70)rotate(90)";
+                })
+                .style("font-size", fontSize);
+
+            // EXIT
+            verticalText.exit()
+                .transition().duration(1000)
+                .style("fill", "#ffffff")
+                .style("font-size", 0)
                 .remove();
         };
 
@@ -165,7 +197,8 @@ var budget = (function (module) {
 
             force.on("tick", tick(centers, model.group, circles));
 
-            drawGroupLabels(centers);
+            drawClusterGroupLabels(centers);
+            drawPlotGroupLabels([]);
             addChangePlotGrid([]);
 
             // UPDATE
@@ -195,12 +228,12 @@ var budget = (function (module) {
                 force = null;
             }
 
-            drawGroupLabels([]);
             addChangePlotGrid(model.changeTickValues);
 
             var groupValues = model.getGroupValues();
-            console.log("groupValues = groupValues"+ groupValues);
-            var xScale = d3.scale.ordinal().domain(groupValues).rangePoints([40, model.width-10], 1);
+            plotXScale.domain(groupValues).rangePoints([40, model.width-10], 1);
+            drawClusterGroupLabels([]);
+            drawPlotGroupLabels(groupValues);
 
             // UPDATE
             circles
@@ -209,7 +242,7 @@ var budget = (function (module) {
                     return model.sizeAttr ? d.radius : budget.DEFAULT_RADIUS;
                 })
                 .attr('cx', function(d) {
-                    return xScale(d[model.group]);
+                    return plotXScale(d[model.group]);
                 })
                 .attr('cy', function(d) {
                     return changeScale(d.approvedPercentChange);
