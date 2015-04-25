@@ -117,4 +117,17 @@ pre {
 .row .control-item label, select.form-control {
     font-size: 10px;
 }
+#budget-total {
+    padding-left: 30px;
+}
+.glow {
+    -webkit-animation: glow-effect 1.0s ease-out;
+    animation: glow-effect 1.0s ease-out;
+}
+
+@-webkit-keyframes glow-effect {
+    from {  text-shadow: 0 0 8px blue;  }
+    to {text-shadow: 0 0 0 white; }
+}
+
 

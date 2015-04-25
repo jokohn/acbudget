@@ -114,9 +114,13 @@ var budget = (function (module) {
                 filteredData.maximums.radius = d3.max(_.pluck(filteredData, "radius"));
             }
 
-            //console.log("numPoints = " + filteredData.length +"  maxs= " + JSON.stringify(filteredData.maximums));
             my.filteredData = filteredData;
             return filteredData;
+        };
+
+        /** returns the grand total of approved amounts for the current filtered set of records */
+        my.getTotal = function() {
+            return d3.sum(my.filteredData, function(d) {return d["Recommended Amount"]});
         };
 
         my.setSize = function(width, height) {
@@ -208,6 +212,7 @@ var budget = (function (module) {
 
         my.setFilter = function(filters) {
             my.filters = filters;
+            my.processData();
         };
 
 

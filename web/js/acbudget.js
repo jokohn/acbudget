@@ -5,6 +5,8 @@ $(document).ready(function() {
     });
 });
 
+//var currentYear;
+//var currentType;
 
 /**
  * create the chart based on the data
@@ -24,9 +26,10 @@ function create(model) {
     var groupSelect = $('#groupSelect');
     var sizeSelect = $('#sizeSelect');
     var colorSelect = $('#colorSelect');
-    colorSelect.find('option:contains("Account Name")').prop('selected', true);
-    groupSelect.find('option:contains("Program Area")').prop('selected', true);
+
+    groupSelect.find('option:contains("Major Object")').prop('selected', true);
     sizeSelect.find('option:contains("Approved Amount")').prop('selected', true);
+    colorSelect.find('option:contains("Expense Category")').prop('selected', true);
 
     forceChart.setGroup(groupSelect.find(":selected").attr("value"));
     forceChart.setSizeAttribute(sizeSelect.find(":selected").attr("value"));
@@ -86,5 +89,24 @@ function create(model) {
         var type = isExpenditure ? "Expenditure" : "Revenue";
 
         model.setFilter({"Fiscal Year":year, "type":type});
+
+        updateTitle(year, isExpenditure)
     }
+
+    /**
+     * make sure that the title reflects year, type, and totals based on selections
+     * Add a little glow effect so its apparent what changed.
+     */
+    function updateTitle(year, isExpenditure) {
+
+        var total = model.getTotal().toLocaleString();
+        var totalBudgetSuffix = total + " in " + (isExpenditure ? " expenditures" : "revenues");
+
+        $("#current-year").text(year).addClass("glow");
+        $("#budget-total").text(totalBudgetSuffix);
+
+        setTimeout(function(){
+            $("#current-year").removeClass('glow');
+        }, 500);
+}
 }
