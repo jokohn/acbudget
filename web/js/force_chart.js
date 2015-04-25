@@ -193,7 +193,7 @@ var budget = (function (module) {
             // .friction(0) freezes
             // .theta(0.8)
             // .alpha(0.1)  cooling parameter
-            force = d3.layout.force(); //.gravity(1.0).friction(0.2).alpha(0.4);
+            force = d3.layout.force().alpha(0.4); //.gravity(1.0).friction(0.2).alpha(0.4);
 
             force.on("tick", tick(centers, model.group, circles));
 
@@ -305,7 +305,7 @@ var budget = (function (module) {
                 .remove();
         };
 
-        /** updates a timestep of the physics pase layout animation */
+        /** updates a timestep of the physics layout animation */
         var tick = function(centers, group, circles) {
             var focis = {};
             for (var i = 0; i < centers.length; i++) {
