@@ -5,8 +5,7 @@ $(document).ready(function() {
     });
 });
 
-//var currentYear;
-//var currentType;
+var currentYear;
 
 /**
  * create the chart based on the data
@@ -34,6 +33,7 @@ function create(model) {
     forceChart.setGroup(groupSelect.find(":selected").attr("value"));
     forceChart.setSizeAttribute(sizeSelect.find(":selected").attr("value"));
     forceChart.setColorAttribute(colorSelect.find(":selected").attr("value"));
+    currentYear =
     doResize(); // initial sizing
 
     $('#year-select').change(function() {
@@ -83,9 +83,8 @@ function create(model) {
     }
 
     function doFilter() {
-        var isYear2014 = $("#year2014").is(":checked");
         var isExpenditure = $("#expenditure").is(":checked");
-        var year = isYear2014 ? "2014" : "2015";
+        var year = getYear();
         var type = isExpenditure ? "Expenditure" : "Revenue";
 
         model.setFilter({"Fiscal Year":year, "type":type});
@@ -99,14 +98,25 @@ function create(model) {
      */
     function updateTitle(year, isExpenditure) {
 
-        var total = model.getTotal().toLocaleString();
-        var totalBudgetSuffix = total + " in " + (isExpenditure ? " expenditures" : "revenues");
+        var total = "$" + model.getTotal().toLocaleString();
+        var totalSuffix = " in " + (isExpenditure ? "expenditures" : "revenues");
 
-        $("#current-year").text(year).addClass("glow");
-        $("#budget-total").text(totalBudgetSuffix);
+        var newYear = getYear();
+        if (newYear != currentYear) {
+            $("#current-year").text(year).addClass("glow");
+            currentYear = newYear;
+        }
+
+        $("#budget-total").attr("class", isExpenditure ? "expenditure-style" : "revenue-style").text(total);
+        $("#budget-type").text(totalSuffix);
 
         setTimeout(function(){
             $("#current-year").removeClass('glow');
         }, 500);
-}
+    }
+
+    function getYear() {
+        var isYear2014 = $("#year2014").is(":checked");
+        return isYear2014 ? "2014" : "2015";
+    }
 }
